@@ -1,0 +1,32 @@
+
+.boardpiece {
+    float: left;
+    font-weight: bold;
+    background: black;
+    text-align: center;
+    font-size: 200%
+}
+
+.piece {
+    float: left;
+    font-weight: bold;
+    background: black;
+    text-align: center;
+    font-size: 200%
+}
+
+.grid {
+    float: left;
+    font-weight: bold;
+    text-align: center;
+    font-size: 200%
+}
+
+.snapgrid {}
+
+#board {
+    height: 400px;
+    width: 400px;
+    overflow: auto;
+    border: solid 1px;
+}

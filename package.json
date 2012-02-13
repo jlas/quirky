@@ -1,0 +1,13 @@
+{
+  "name": "quirky",
+  "author": "Juan Lasheras <juan.lasheras@gmail.com>",
+  "version": "0.0.0",
+  "description": "A board game built with node.js and jQuery.",
+  "dependencies": {
+    "cookies": "0.2.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jlas/quirky"
+  }
+}
