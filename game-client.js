@@ -44,6 +44,7 @@ function getMyPieces(player) {
             var piece = data[i];
             $("#pieces").append('<div class="piece" style="color:'+
                 pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
+            $(".piece:last-child").data("piece", piece);
             $("#pieces").append("<div style='float: left; margin: 2px'>&nbsp</div>");
         }
         
@@ -65,11 +66,21 @@ function getBoard() {
     $.getJSON("/game/dimensions", function (data) {
         var dimensions = data;
         // add 5 for each side since players can add up to 5 pieces per turn
-        var rows = dimensions["bottom"] - dimensions["top"] + 1 + (2*board_margin);
-        var cols = dimensions["right"] - dimensions["left"] + 1 + (2*board_margin);
-        for (var i = 0; i < rows; i++)
-            for (var j = 0; j < cols; j++)
+        var top = dimensions["top"] - board_margin;
+        var bottom = dimensions["bottom"] + board_margin;
+        var left = dimensions["left"] - board_margin;
+        var right = dimensions["right"] + board_margin;
+
+        var rows = bottom - top + 1;
+        var cols = right - left + 1;
+        var k = 1;
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < cols; j++) {
                 $("#board").append('<div class="grid"></div>');
+                $(".grid:last-child").data(
+                    "col", (j+left)).data("row", (top+i));
+            }
+        }
 
         $(".grid").css("width", (100/cols)+"%");
         $(".grid").css("height", (100/rows)+"%");
@@ -88,17 +99,16 @@ function getBoard() {
                     var dcol = col - dimensions["left"] + board_margin;
                     var idx = drow*cols + dcol;
                     $(".grid:nth-child("+idx+")").addClass("boardpiece");
-                    $(".grid:nth-child("+idx+")").css("color", pastels[piece.color]);
+                    $(".grid:nth-child("+idx+")").css("color",
+                                                      pastels[piece.color]);
                     $(".grid:nth-child("+idx+")").html(ushapes[piece.shape]);
                 }
             } else {  // place marker in center if board is empty
                 var idx = parseInt($(".grid").length / 2);
-                $(".grid:nth-child("+idx+")").html('&middot;');
                 $(".grid:nth-child("+idx+")").addClass('snapgrid');
             }
 
-            // place markers around exisiting pieces, iterate through all the
-            // board spots and check the adjacent spots
+            // iterate through board and mark spots adjacent to pieces
             if (data.length > 0) {
                 var offsets = [1, -1, cols, -cols];
                 for (var i = 1; i <= $(".grid").length; i++) {
@@ -107,10 +117,30 @@ function getBoard() {
                         var next = $(".grid:nth-child("+(i+offsets[j])+")");
                         if (!cur.hasClass("boardpiece") &&
                             next.hasClass("boardpiece"))
-                            cur.html("&middot;").addClass("snapgrid");
+                            cur.addClass("snapgrid");
                     }
                 }
             }
+
+            $(".snapgrid").droppable({
+                accept: ".piece",
+                activate: function (event, ui) { $(".snapgrid").html("&middot;"); },
+                deactivate: function (event, ui) { $(".snapgrid").html(""); },
+                drop: function (event, ui) {
+                    var col = $(this).data()['col'];
+                    var row = $(this).data()['row'];
+                    var piece = $(ui.draggable).data()['piece'];
+                    $.post("/game/board", {
+                        shape: piece['shape'],
+                        color: piece['color'],
+                        row: row,
+                        column: col
+                    }, function() {
+                        getBoard();
+                        getGamePieces();
+                    });
+                }
+            });
         })
     })
 }

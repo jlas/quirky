@@ -18,6 +18,7 @@ function Game () {
 
     this.board = [];
     this.pieces = [];
+    this.players = {};
 
     // board dimensions
     this.dimensions = {'top': 90, 'right': 90, 'bottom': 90, 'left': 90};
@@ -87,7 +88,7 @@ function addGamePiece(gamepiece) {
 function playerFromReq(request, response) {
     var jar = new cookies(request, response);
     var p = jar.get('player');
-    return players[p];
+    return game.players[p];
 }
 
 // extract data from request body and pass to onEnd functon
@@ -109,7 +110,7 @@ function handlePlayers(request, response, path) {
                 if (form && form.name) {
                     var p = new Player(form.name);
                     p.pieces = game.drawPieces(6);
-                    players[p.name] = p;
+                    game.players[p.name] = p;
                     // TODO replace set cookie with cookie API?
                     response.writeHead(200, {'Content-Type': 'text/html',
                                 "Set-Cookie": ["player=" + form.name]});
@@ -119,12 +120,12 @@ function handlePlayers(request, response, path) {
             return
         }
         else
-            var r = JSON.stringify(players);
+            var r = JSON.stringify(game.players);
 
     } else {
         // return info on a specific player
 
-        var player = players[path[0]];
+        var player = game.players[path[0]];
 
         if (typeof player === 'undefined') {
             // player not found
@@ -196,12 +197,11 @@ function handleGame(request, response, path) {
     respOk(response, r, 'text/json');
 }
 
-var bob = new Player('bob');
-bob.pieces.push(new Piece('circle', 'red'));
-bob.pieces.push(new Piece('star', 'blue'));
+//var bob = new Player('bob');
+//bob.pieces.push(new Piece('circle', 'red'));
+//bob.pieces.push(new Piece('star', 'blue'));
 
 var game = new Game();
-var players = {'bob': bob};
 
 server = http.createServer();
 
@@ -222,16 +222,16 @@ server.on('request', function(request, response) {
         handleGame(request, response, path.slice(1));
         break;
     default:
-	var f;
-	if (f = static_files[path[0]]) {
-	    var type = 'text/html';
-	    if (path[0].search('css$') >= 0)
-		type = 'text/css';
-	    else if (path[0].search('js$') >= 0)
-		type = 'text/javascript';
-	    respOk(response, f, type);
-	}
-	break;
+        var f;
+        if (f = static_files[path[0]]) {
+            var type = 'text/html';
+            if (path[0].search('css$') >= 0)
+                type = 'text/css';
+            else if (path[0].search('js$') >= 0)
+                type = 'text/javascript';
+            respOk(response, f, type);
+        }
+        break;
     }
 });
 
