@@ -47,6 +47,7 @@ function Player (name) {
     
     this.name = name;
     this.pieces = [];
+    this.has_turn = false;
 }
 
 function Piece (shape, color) {
@@ -74,14 +75,14 @@ function addGamePiece(gamepiece) {
     game.board.push(gamepiece);
     
     // update board dimensions
-    if (gamepiece.column < game.dimensions.left)
-        game.dimensions.left = gamepiece.column;
-    else if (gamepiece.column > game.dimensions.right)
-        game.dimensions.right = gamepiece.column;
-    if (gamepiece.row < game.dimensions.top)
-        game.dimensions.top = gamepiece.row;
-    else if (gamepiece.row > game.dimensions.bottom)
-        game.dimensions.bottom = gamepiece.row;
+    //    if (gamepiece.column < game.dimensions.left)
+    //    game.dimensions.left = gamepiece.column;
+    //else if (gamepiece.column > game.dimensions.right)
+    //    game.dimensions.right = gamepiece.column;
+    //if (gamepiece.row < game.dimensions.top)
+    //    game.dimensions.top = gamepiece.row;
+    //else if (gamepiece.row > game.dimensions.bottom)
+    //    game.dimensions.bottom = gamepiece.row;
 }
 
 // find player from request cookie
@@ -106,17 +107,30 @@ function handlePlayers(request, response, path) {
         // return info on the players collection
 
         if (request.method == "POST") {
-            requestBody(request, function(form) {
-                if (form && form.name) {
-                    var p = new Player(form.name);
-                    p.pieces = game.drawPieces(6);
-                    game.players[p.name] = p;
-                    // TODO replace set cookie with cookie API?
-                    response.writeHead(200, {'Content-Type': 'text/html',
-                                "Set-Cookie": ["player=" + form.name]});
-                    response.end();
-                }
-            });
+	    var player = playerFromReq(request, response);
+	    if (player)
+		// end turn
+		var func = function () {
+		    if (form && form.end_turn) {
+			player.has_turn = false;
+			var next = (players.indexOf(player) + 1) % players.length;
+			players[next].has_turn = true;
+		    }
+		}
+	    else
+		// add player
+		var func = function(form) {
+		    if (form && form.name) {
+			var p = new Player(form.name);
+			p.pieces = game.drawPieces(6);
+			game.players[p.name] = p;
+			// TODO replace set cookie with cookie API?
+			response.writeHead(200, {'Content-Type': 'text/html',
+				    "Set-Cookie": ["player=" + form.name]});
+			response.end();
+		    }
+		}
+            requestBody(request, func);
             return
         }
         else

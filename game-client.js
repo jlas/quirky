@@ -71,6 +71,8 @@ function getBoard() {
         var left = dimensions["left"] - board_margin;
         var right = dimensions["right"] + board_margin;
 
+	$("#board").empty()
+
         var rows = bottom - top + 1;
         var cols = right - left + 1;
         var k = 1;
@@ -97,14 +99,14 @@ function getBoard() {
                     var col = data[i].column;
                     var drow = row - dimensions["top"] + board_margin;
                     var dcol = col - dimensions["left"] + board_margin;
-                    var idx = drow*cols + dcol;
+                    var idx = drow*cols + dcol + 1;
                     $(".grid:nth-child("+idx+")").addClass("boardpiece");
                     $(".grid:nth-child("+idx+")").css("color",
                                                       pastels[piece.color]);
                     $(".grid:nth-child("+idx+")").html(ushapes[piece.shape]);
                 }
             } else {  // place marker in center if board is empty
-                var idx = parseInt($(".grid").length / 2);
+                var idx = parseInt(($(".grid").length + 1) / 2);
                 $(".grid:nth-child("+idx+")").addClass('snapgrid');
             }
 
