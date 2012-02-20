@@ -30,3 +30,7 @@
     overflow: auto;
     border: solid 1px;
 }
+
+.bold {
+    font-weight: bold;
+}

@@ -66,8 +66,11 @@ function GamePiece (piece, row, column) {
 
 // typical response helper
 function respOk (response, data, type) {
-    response.writeHead(200, {'Content-Type': type});
-    response.write(data, 'utf-8');
+    if (type)
+        headers = {'Content-Type': type};
+    response.writeHead(200, headers);
+    if (data)
+        response.write(data, 'utf-8');
     response.end();
 }
 
@@ -75,14 +78,15 @@ function addGamePiece(gamepiece) {
     game.board.push(gamepiece);
     
     // update board dimensions
-    //    if (gamepiece.column < game.dimensions.left)
-    //    game.dimensions.left = gamepiece.column;
-    //else if (gamepiece.column > game.dimensions.right)
-    //    game.dimensions.right = gamepiece.column;
-    //if (gamepiece.row < game.dimensions.top)
-    //    game.dimensions.top = gamepiece.row;
-    //else if (gamepiece.row > game.dimensions.bottom)
-    //    game.dimensions.bottom = gamepiece.row;
+    var dim = game.dimensions;
+    if (gamepiece.column < dim.left)
+        dim.left = gamepiece.column;
+    else if (gamepiece.column > dim.right)
+        dim.right = gamepiece.column;
+    if (gamepiece.row < dim.top)
+        dim.top = gamepiece.row;
+    else if (gamepiece.row > dim.bottom)
+        dim.bottom = gamepiece.row;
 }
 
 // find player from request cookie
@@ -107,29 +111,45 @@ function handlePlayers(request, response, path) {
         // return info on the players collection
 
         if (request.method == "POST") {
-	    var player = playerFromReq(request, response);
-	    if (player)
-		// end turn
-		var func = function () {
-		    if (form && form.end_turn) {
-			player.has_turn = false;
-			var next = (players.indexOf(player) + 1) % players.length;
-			players[next].has_turn = true;
-		    }
-		}
-	    else
-		// add player
-		var func = function(form) {
-		    if (form && form.name) {
-			var p = new Player(form.name);
-			p.pieces = game.drawPieces(6);
-			game.players[p.name] = p;
-			// TODO replace set cookie with cookie API?
-			response.writeHead(200, {'Content-Type': 'text/html',
-				    "Set-Cookie": ["player=" + form.name]});
-			response.end();
-		    }
-		}
+            var player = playerFromReq(request, response);
+            if (player)
+                // end turn
+                // TODO should this be under /players/<name>/?
+                var func = function (form) {
+                    if (form && form.end_turn) {
+                        player.has_turn = false;
+
+                        // give next player the turn
+                        var _players = Object.keys(game.players);
+                        var next_idx = (_players.indexOf(player['name']) + 1) %
+                            _players.length;
+                        var next = game.players[_players[next_idx]];
+                        next.has_turn = true;
+
+                        // draw new pieces
+                        next.pieces = next.pieces.concat(game.drawPieces(
+                            6 - next.pieces.length));
+                        respOk(response);
+                    }
+                }
+            else
+                // add player
+                var func = function(form) {
+                    if (form && form.name) {
+                        var p = new Player(form.name);
+                        p.pieces = game.drawPieces(6);
+                        game.players[p.name] = p;
+
+                        // if first player, make it his turn
+                        if (Object.keys(game.players).length == 1)
+                            p.has_turn = true;
+
+                        // TODO replace set cookie with cookie API?
+                        response.writeHead(200, {'Content-Type': 'text/html',
+                                    "Set-Cookie": ["player=" + form.name]});
+                        response.end();
+                    }
+                }
             requestBody(request, func);
             return
         }

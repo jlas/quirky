@@ -18,44 +18,71 @@ var ushapes = {
 }
 
 function getPlayers() {
-    var player = $.cookie("player");
+    var my_player = $.cookie("player");
     
     $.getJSON("/players", function (data) {
         var idx;
+        var turn;
         var players = [];
-        for (p in data)
+        for (p in data) {
             players.push(p);
+            if (p['has_turn'])
+                turn = p;
+        }
+
+        $("#players").empty();
+        $("#pieces").empty();
+        $("#turn").empty();
+
+        // display all players
         $("#players").html(players.join(", "));
-        if (typeof data[player] === "undefined") {
+
+        // check if client has a valid player or allow him to add one
+        my_player = data[my_player];
+        if (typeof my_player === "undefined") {
             $("#add_player").show();
             $("#pieces").html("");
+            if (turn)
+                turn = "It is "+turn['name']+"'s turn.";
         } else {
-            getMyPieces(player);
+            getMyPieces(my_player);
             $("#add_piece").show();
             $("#add_player").hide();
+            // allow player to end his turn
+            if (my_player["has_turn"]) {
+                turn = "It is your turn.";
+                $("#turn").append("<button>End my turn</button>");
+                $("#turn > button")[0].onclick = function() {
+                    $.post("/players", {end_turn: true},
+                           function() {getPlayers();});
+                };
+            }
         }
+
+        if (turn)
+            $("#turn").prepend(turn+" ");
+        getGamePieces();
     });
 }
 
 function getMyPieces(player) {
-    //$("#pieces").load("/players/"+player+"/pieces");
-    $.getJSON("/players/"+player+"/pieces", function (data) {
-        for (var i in data) {
-            var piece = data[i];
-            $("#pieces").append('<div class="piece" style="color:'+
-                pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
-            $(".piece:last-child").data("piece", piece);
-            $("#pieces").append("<div style='float: left; margin: 2px'>&nbsp</div>");
-        }
-        
+    for (var i in player["pieces"]) {
+        var piece = player["pieces"][i];
+        $("#pieces").append('<div class="piece" style="color:'+
+                            pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
+        $(".piece:last-child").data("piece", piece);
+        $("#pieces").append("<div style='float: left; margin: 2px'>&nbsp</div>");
+    }
+    
+    $(".piece").width($(".grid").width());
+    $(".piece").height($(".grid").height());
+    $(".piece").css("font-size", $(".grid").css("font-size"));
+
+    if (player['has_turn'])
         $(".piece").draggable({
             containment: "#board",
             snap: ".snapgrid"
         });
-
-        $(".piece").width($(".grid").width());
-        $(".piece").height($(".grid").height());
-    });
 }
 
 function getBoard() {
@@ -71,7 +98,7 @@ function getBoard() {
         var left = dimensions["left"] - board_margin;
         var right = dimensions["right"] + board_margin;
 
-	$("#board").empty()
+        $("#board").empty();
 
         var rows = bottom - top + 1;
         var cols = right - left + 1;
@@ -86,7 +113,8 @@ function getBoard() {
 
         $(".grid").css("width", (100/cols)+"%");
         $(".grid").css("height", (100/rows)+"%");
-        
+        $(".grid").css("font-size", $(".grid").height());
+
         //$("#board").css("width", (($(".grid").width()) * 10))
         //$("#board").css("height", (($(".grid").height()) * 10))
     
@@ -139,7 +167,7 @@ function getBoard() {
                         column: col
                     }, function() {
                         getBoard();
-                        getGamePieces();
+                        getPlayers();
                     });
                 }
             });
@@ -149,6 +177,7 @@ function getBoard() {
 
 function getGamePieces() {
     $.getJSON("/game/pieces", function(data) {
+        $("#game_pieces").empty();
         var npieces = 0;
         for (var i in data)
             npieces += data[i].count;
@@ -168,6 +197,7 @@ $(function() {
                function() {getPlayers();});
     };
 
+    /*
     $("#add_piece > button")[0].onclick = function() {
         var inputs = $("#add_piece > input");
         var selects = $("#add_piece > select");
@@ -181,4 +211,5 @@ $(function() {
             getGamePieces();
         });
     };
+    */
 });
