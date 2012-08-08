@@ -19,7 +19,7 @@ function Game () {
     this.board = [];  // list representation
     this.boardmat = [];  // matrix representation
     for (var i=0; i<181; i++)
-	this.boardmat[i] = new Array(181);
+        this.boardmat[i] = new Array(181);
     this.pieces = [];
     this.players = {};
 
@@ -47,7 +47,7 @@ Game.prototype.drawPieces = function(num) {
 }
 
 function Player (name) {
-    
+
     this.name = name;
     this.pieces = [];
     this.has_turn = false;
@@ -87,34 +87,34 @@ function addGamePiece(gamepiece) {
     var col = gamepiece.column;
 
     if (typeof game.boardmat[row][col] !== "undefined")
-	return "GamePiece already exists.";
-    
+        return "GamePiece already exists.";
+
     // helper function, return true if adjacent piece is compatible
     function _adjacentPiece(piece, adjacent) {
-	if (typeof adjacent === 'undefined')
-	    return true;
-	var samecolor = (adjacent.color == piece.color);
-	var sameshape = (adjacent.shape == piece.shape);
+        if (typeof adjacent === 'undefined')
+            return true;
+        var samecolor = (adjacent.color == piece.color);
+        var sameshape = (adjacent.shape == piece.shape);
 
-	console.log('piece: ' + piece.color + ' ' + piece.shape +
-		    ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
+        console.log('piece: ' + piece.color + ' ' + piece.shape +
+                    ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
 
-	// either samecolor or sameshape, not both
-	if ((samecolor || sameshape) && !(samecolor && sameshape))
-	    return true;
-	return false
+        // either samecolor or sameshape, not both
+        if ((samecolor || sameshape) && !(samecolor && sameshape))
+            return true;
+        return false
     }
 
     // check if adjacent pieces are compatible
     if (!(_adjacentPiece(gamepiece.piece, game.boardmat[row-1][col]) &&
-	  _adjacentPiece(gamepiece.piece, game.boardmat[row+1][col]) &&
-	  _adjacentPiece(gamepiece.piece, game.boardmat[row][col-1]) &&
-	  _adjacentPiece(gamepiece.piece, game.boardmat[row][col+1])))
-	return "GamePiece adjacent to incompatible piece.";
+          _adjacentPiece(gamepiece.piece, game.boardmat[row+1][col]) &&
+          _adjacentPiece(gamepiece.piece, game.boardmat[row][col-1]) &&
+          _adjacentPiece(gamepiece.piece, game.boardmat[row][col+1])))
+        return "GamePiece adjacent to incompatible piece.";
 
     game.boardmat[row][col] = gamepiece.piece;
     game.board.push(gamepiece);
-    
+
     // update board dimensions
     var dim = game.dimensions;
     if (col < dim.left)
@@ -128,12 +128,12 @@ function addGamePiece(gamepiece) {
 
     // debug logging, print out boardmat
     // for (var i=dim.top; i<=dim.bottom; i++) {
-    // 	for (var j=dim.left; j<=dim.right; j++) {
-    // 	    var piecestr = (typeof game.boardmat[i][j] == "undefined") ? " ": 
-    // 		game.boardmat[i][j];
-    // 	    process.stdout.write('['+piecestr+']');
-    // 	}
-    // 	console.log('');
+    //  for (var j=dim.left; j<=dim.right; j++) {
+    //      var piecestr = (typeof game.boardmat[i][j] == "undefined") ? " ":
+    //          game.boardmat[i][j];
+    //      process.stdout.write('['+piecestr+']');
+    //  }
+    //  console.log('');
     // }
 }
 
@@ -154,7 +154,7 @@ function requestBody(request, onEnd) {
 }
 
 function handlePlayers(request, response, path) {
-    
+
     if (!path.length) {
         // return info on the players collection
 
@@ -225,7 +225,7 @@ function handlePlayers(request, response, path) {
 }
 
 function handleGame(request, response, path) {
-    
+
     switch(path[0]) {
     case 'board':
         // add pieces to the board
@@ -256,26 +256,26 @@ function handleGame(request, response, path) {
                         }
                         _idx += 1;
                     }
-                    
+
                     if (idx > -1) {
                         var gp = new GamePiece(piece, row, column);
                         console.info('adding piece:'+JSON.stringify(gp));
                         var resp = addGamePiece(gp);
-			if (typeof resp !== "undefined") {
-			    // add gamepiece failed
-			    response.writeHead(409, {'Content-Type': 'text/json'});
-			    response.write(resp, 'utf-8');
-			    response.end();
-			    return;
-			} else {
-			    // add gamepiece succeeded
+                        if (typeof resp !== "undefined") {
+                            // add gamepiece failed
+                            response.writeHead(409, {'Content-Type': 'text/json'});
+                            response.write(resp, 'utf-8');
+                            response.end();
+                            return;
+                        } else {
+                            // add gamepiece succeeded
                             player.pieces.splice(idx, 1);
-			    respOk(response, '', 'text/json');
-			}
+                            respOk(response, '', 'text/json');
+                        }
                     }
                 }
             });
-	    return;
+            return;
         }
         // get pieces on the board
         var r = JSON.stringify(game.board);
@@ -301,7 +301,7 @@ server = http.createServer();
 server.on('request', function(request, response) {
 
     //console.log('got request:'+JSON.stringify(request.headers));
-    
+
     var u = url.parse(request.url);
     var path = u.pathname.split('/').filter(function(x) {return Boolean(x)});
     //console.log('req headers:'+JSON.stringify(request.headers));

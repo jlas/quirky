@@ -1,4 +1,3 @@
-
 var pastels = {
     "green": "#A0E7A0",
     "yellow": "#FFFB8C",
@@ -19,7 +18,7 @@ var ushapes = {
 
 function getPlayers() {
     var my_player = $.cookie("player");
-    
+
     $.getJSON("/players", function (data) {
         var idx;
         var turn;
@@ -73,7 +72,7 @@ function getMyPieces(player) {
         $(".piece:last-child").data("piece", piece);
         $("#pieces").append("<div style='float: left; margin: 2px'>&nbsp</div>");
     }
-    
+
     $(".piece").width($(".grid").width());
     $(".piece").height($(".grid").height());
     $(".piece").css("font-size", $(".grid").css("font-size"));
@@ -117,7 +116,7 @@ function getBoard() {
 
         //$("#board").css("width", (($(".grid").width()) * 10))
         //$("#board").css("height", (($(".grid").height()) * 10))
-    
+
         $.getJSON("/game/board", function (data) {
             // place pieces on board
             if (data.length > 0) {
@@ -161,25 +160,25 @@ function getBoard() {
                     var row = $(this).data()['row'];
                     var piece = $(ui.draggable).data()['piece'];
                     $.ajax({
-			type: 'POST',
-			url: "/game/board", 
-			data: {
+                        type: 'POST',
+                        url: "/game/board",
+                        data: {
                             shape: piece['shape'],
                             color: piece['color'],
                             row: row,
                             column: col
-			},
-			success: function() {
-			    $("#errors").empty();
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-			    $("#errors").append("<div class='error'>"+jqXHR.responseText+"</div>");
-			},
-			complete: function() {
+                        },
+                        success: function() {
+                            $("#errors").empty();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $("#errors").append("<div class='error'>"+jqXHR.responseText+"</div>");
+                        },
+                        complete: function() {
                             getBoard();
                             getPlayers();
-			}
-		    });
+                        }
+                    });
                 }
             });
         })
