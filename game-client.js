@@ -160,15 +160,26 @@ function getBoard() {
                     var col = $(this).data()['col'];
                     var row = $(this).data()['row'];
                     var piece = $(ui.draggable).data()['piece'];
-                    $.post("/game/board", {
-                        shape: piece['shape'],
-                        color: piece['color'],
-                        row: row,
-                        column: col
-                    }, function() {
-                        getBoard();
-                        getPlayers();
-                    });
+                    $.ajax({
+			type: 'POST',
+			url: "/game/board", 
+			data: {
+                            shape: piece['shape'],
+                            color: piece['color'],
+                            row: row,
+                            column: col
+			},
+			success: function() {
+			    $("#errors").empty();
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+			    $("#errors").append("<div class='error'>"+jqXHR.responseText+"</div>");
+			},
+			complete: function() {
+                            getBoard();
+                            getPlayers();
+			}
+		    });
                 }
             });
         })

@@ -16,7 +16,10 @@ var static_files = {
 
 function Game () {
 
-    this.board = [];
+    this.board = [];  // list representation
+    this.boardmat = [];  // matrix representation
+    for (var i=0; i<181; i++)
+	this.boardmat[i] = new Array(181);
     this.pieces = [];
     this.players = {};
 
@@ -74,19 +77,64 @@ function respOk (response, data, type) {
     response.end();
 }
 
+// add a game piece to the board, check that:
+//  1. game piece doesn't already exist
+//  2. game piece is not adjacent to non-compatible piece
+// return nothing if Success, otherwise return an error json
 function addGamePiece(gamepiece) {
+
+    var row = gamepiece.row;
+    var col = gamepiece.column;
+
+    if (typeof game.boardmat[row][col] !== "undefined")
+	return "GamePiece already exists.";
+    
+    // helper function, return true if adjacent piece is compatible
+    function _adjacentPiece(piece, adjacent) {
+	if (typeof adjacent === 'undefined')
+	    return true;
+	var samecolor = (adjacent.color == piece.color);
+	var sameshape = (adjacent.shape == piece.shape);
+
+	console.log('piece: ' + piece.color + ' ' + piece.shape +
+		    ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
+
+	// either samecolor or sameshape, not both
+	if ((samecolor || sameshape) && !(samecolor && sameshape))
+	    return true;
+	return false
+    }
+
+    // check if adjacent pieces are compatible
+    if (!(_adjacentPiece(gamepiece.piece, game.boardmat[row-1][col]) &&
+	  _adjacentPiece(gamepiece.piece, game.boardmat[row+1][col]) &&
+	  _adjacentPiece(gamepiece.piece, game.boardmat[row][col-1]) &&
+	  _adjacentPiece(gamepiece.piece, game.boardmat[row][col+1])))
+	return "GamePiece adjacent to incompatible piece.";
+
+    game.boardmat[row][col] = gamepiece.piece;
     game.board.push(gamepiece);
     
     // update board dimensions
     var dim = game.dimensions;
-    if (gamepiece.column < dim.left)
-        dim.left = gamepiece.column;
-    else if (gamepiece.column > dim.right)
-        dim.right = gamepiece.column;
-    if (gamepiece.row < dim.top)
-        dim.top = gamepiece.row;
-    else if (gamepiece.row > dim.bottom)
-        dim.bottom = gamepiece.row;
+    if (col < dim.left)
+        dim.left = col;
+    else if (col > dim.right)
+        dim.right = col;
+    if (row < dim.top)
+        dim.top = row;
+    else if (row > dim.bottom)
+        dim.bottom = row;
+
+    // debug logging, print out boardmat
+    // for (var i=dim.top; i<=dim.bottom; i++) {
+    // 	for (var j=dim.left; j<=dim.right; j++) {
+    // 	    var piecestr = (typeof game.boardmat[i][j] == "undefined") ? " ": 
+    // 		game.boardmat[i][j];
+    // 	    process.stdout.write('['+piecestr+']');
+    // 	}
+    // 	console.log('');
+    // }
 }
 
 // find player from request cookie
@@ -212,11 +260,22 @@ function handleGame(request, response, path) {
                     if (idx > -1) {
                         var gp = new GamePiece(piece, row, column);
                         console.info('adding piece:'+JSON.stringify(gp));
-                        addGamePiece(gp);
-                        player.pieces.splice(idx, 1);
+                        var resp = addGamePiece(gp);
+			if (typeof resp !== "undefined") {
+			    // add gamepiece failed
+			    response.writeHead(409, {'Content-Type': 'text/json'});
+			    response.write(resp, 'utf-8');
+			    response.end();
+			    return;
+			} else {
+			    // add gamepiece succeeded
+                            player.pieces.splice(idx, 1);
+			    respOk(response, '', 'text/json');
+			}
                     }
                 }
             });
+	    return;
         }
         // get pieces on the board
         var r = JSON.stringify(game.board);
