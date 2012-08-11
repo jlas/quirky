@@ -84,6 +84,36 @@ function getMyPieces(player) {
         });
 }
 
+// When piece is dropped, send a POST to the server to add to board.
+// Either the piece will be added or we get an error back for invalid
+// placements.
+function onPieceDrop(event, ui) {
+    var col = $(this).data()['col'];
+    var row = $(this).data()['row'];
+    var piece = $(ui.draggable).data()['piece'];
+    $.ajax({
+        type: 'POST',
+        url: "/game/board",
+        data: {
+            shape: piece['shape'],
+            color: piece['color'],
+            row: row,
+            column: col
+        },
+        success: function() {
+            $("#errors").empty();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("#errors").empty();
+            $("#errors").append("<div class='error'>"+jqXHR.responseText+"</div>");
+        },
+        complete: function() {
+            getBoard();
+            getPlayers();
+        }
+    });
+}
+
 function getBoard() {
     var board_margin = 5;
     var rows = 0, cols = 0;
@@ -155,31 +185,7 @@ function getBoard() {
                 accept: ".piece",
                 activate: function (event, ui) { $(".snapgrid").html("&middot;"); },
                 deactivate: function (event, ui) { $(".snapgrid").html(""); },
-                drop: function (event, ui) {
-                    var col = $(this).data()['col'];
-                    var row = $(this).data()['row'];
-                    var piece = $(ui.draggable).data()['piece'];
-                    $.ajax({
-                        type: 'POST',
-                        url: "/game/board",
-                        data: {
-                            shape: piece['shape'],
-                            color: piece['color'],
-                            row: row,
-                            column: col
-                        },
-                        success: function() {
-                            $("#errors").empty();
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            $("#errors").append("<div class='error'>"+jqXHR.responseText+"</div>");
-                        },
-                        complete: function() {
-                            getBoard();
-                            getPlayers();
-                        }
-                    });
-                }
+                drop: onPieceDrop,
             });
         })
     })

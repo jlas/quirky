@@ -22,6 +22,7 @@ function Game () {
         this.boardmat[i] = new Array(181);
     this.pieces = [];
     this.players = {};
+    this.turn_pieces = [];  // pieces played this turn
 
     // board dimensions
     this.dimensions = {'top': 90, 'right': 90, 'bottom': 90, 'left': 90};
@@ -112,6 +113,16 @@ function addGamePiece(gamepiece) {
           _adjacentPiece(gamepiece.piece, game.boardmat[row][col+1])))
         return "GamePiece adjacent to incompatible piece.";
 
+    // check if piece played in same row or column as past pieces this turn}
+    function sameRowOrCol(otherpiece) {
+        return (otherpiece.row == row || otherpiece.column == col)
+    }
+    if (game.turn_pieces)
+        if (!game.turn_pieces.every(sameRowOrCol))
+            return ("GamePiece must be in same row or column as others " +
+                    "placed this turn.");
+
+    game.turn_pieces.push(gamepiece);
     game.boardmat[row][col] = gamepiece.piece;
     game.board.push(gamepiece);
 
@@ -153,6 +164,26 @@ function requestBody(request, onEnd) {
     });
 }
 
+// end the turn for the player and start for the next
+// @param player: the player whose turn will end
+function switchPlayers(player) {
+    player.has_turn = false;
+
+    // clear pieces played this turn
+    game.turn_pieces = [];
+
+    // give next player the turn
+    var _players = Object.keys(game.players);
+    var next_idx = (_players.indexOf(player['name']) + 1) %
+        _players.length;
+    var next = game.players[_players[next_idx]];
+    next.has_turn = true;
+
+    // draw new pieces
+    next.pieces = next.pieces.concat(game.drawPieces(
+        6 - next.pieces.length));
+}
+
 function handlePlayers(request, response, path) {
 
     if (!path.length) {
@@ -165,18 +196,7 @@ function handlePlayers(request, response, path) {
                 // TODO should this be under /players/<name>/?
                 var func = function (form) {
                     if (form && form.end_turn) {
-                        player.has_turn = false;
-
-                        // give next player the turn
-                        var _players = Object.keys(game.players);
-                        var next_idx = (_players.indexOf(player['name']) + 1) %
-                            _players.length;
-                        var next = game.players[_players[next_idx]];
-                        next.has_turn = true;
-
-                        // draw new pieces
-                        next.pieces = next.pieces.concat(game.drawPieces(
-                            6 - next.pieces.length));
+                        switchPlayers(player);
                         respOk(response);
                     }
                 }
@@ -193,7 +213,7 @@ function handlePlayers(request, response, path) {
                             p.has_turn = true;
 
                         // TODO replace set cookie with cookie API?
-                        response.writeHead(200, {'Content-Type': 'text/html',
+                        response.writeHead(200, {'Content-Type': 'text/json',
                                     "Set-Cookie": ["player=" + form.name]});
                         response.end();
                     }
@@ -211,7 +231,7 @@ function handlePlayers(request, response, path) {
 
         if (typeof player === 'undefined') {
             // player not found
-            response.writeHead(404, {'Content-Type': 'text/html'});
+            response.writeHead(404, {'Content-Type': 'text/json'});
             response.end();
             return;
         }
