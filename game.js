@@ -48,9 +48,9 @@ Game.prototype.drawPieces = function(num) {
 }
 
 function Player (name) {
-
     this.name = name;
     this.pieces = [];
+    this.points = 0;
     this.has_turn = false;
 }
 
@@ -66,6 +66,10 @@ function GamePiece (piece, row, column) {
     this.piece = piece;
     this.row = row;
     this.column = column;
+    this.equals = function(x) {
+        return (this.column == x.column && this.row == x.row &&
+                this.piece.equals(x.piece))
+    }
 }
 
 // typical response helper
@@ -81,33 +85,43 @@ function respOk (response, data, type) {
 // add a game piece to the board, check that:
 //  1. game piece doesn't already exist
 //  2. game piece is not adjacent to non-compatible piece
-// return: nothing if Success, otherwise return an error json
+// return: integer of points if Success, otherwise return an error string
 function addGamePiece(gamepiece) {
 
     var row = gamepiece.row;
     var col = gamepiece.column;
+    var points = 0;
 
     if (typeof game.boardmat[row][col] !== "undefined")
         return "GamePiece already exists.";
 
     // Helper function, to check whether it is valid to place a piece
     // param piece: the piece object being placed
-    // param getAdjacent: a function that returns an adjacent piece
-    // return: false if valid placement, otherwise return the offending piece
+    // param getAdjacent: a function that returns an adjacent GamePiece
+    // return: false if valid placement, otherwise return the offending GamePiece
     function _adjacentPieces(piece, getAdjacent) {
-        for (var i=1; i<=2; i++) {
+        for (var i=1; i<=6; i++) {
             adjacent = getAdjacent(i);
             if (typeof adjacent === 'undefined')
                 return false;
-            var samecolor = (adjacent.color == piece.color);
-            var sameshape = (adjacent.shape == piece.shape);
+            else if (i == 6)  // can't have more than 6 pieces in a valid line
+                return adjacent;
+
+            var samecolor = (adjacent.piece.color == piece.color);
+            var sameshape = (adjacent.piece.shape == piece.shape);
 
             console.log('piece: ' + piece.color + ' ' + piece.shape +
-                        ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
+                        ', adjacent: ' + adjacent.piece.color + ' ' +
+                        adjacent.piece.shape);
 
             // either samecolor or sameshape, not both
-            if ((samecolor || sameshape) && !(samecolor && sameshape))
+            if ((samecolor || sameshape) && !(samecolor && sameshape)) {
+                // add a point for adjacent piece, if not been played this turn
+                if (!game.turn_pieces.some(function(x){
+                    return x.equals(adjacent);}))
+                    points += 1;
                 continue;
+            }
             return adjacent;
         }
         return false;
@@ -115,17 +129,25 @@ function addGamePiece(gamepiece) {
 
     // check if adjacent pieces are compatible
     var checkLeft = _adjacentPieces(gamepiece.piece, function(offset) {
-        return game.boardmat[row-offset][col]});
+        var _row = row-offset;
+        var piece = game.boardmat[_row][col];
+        return piece && new GamePiece(piece, _row, col)});
     var checkRight =_adjacentPieces(gamepiece.piece, function(offset) {
-        return game.boardmat[row+offset][col]});
+        var _row = row+offset;
+        var piece = game.boardmat[_row][col];
+        return piece && new GamePiece(piece, _row, col)});
     var checkUp =_adjacentPieces(gamepiece.piece, function(offset) {
-        return game.boardmat[row][col-offset]});
+        var _col = col-offset;
+        var piece = game.boardmat[row][_col];
+        return piece && new GamePiece(piece, row, _col)});
     var checkDown =_adjacentPieces(gamepiece.piece, function(offset) {
-        return game.boardmat[row][col+offset]});
+        var _col = col+offset;
+        var piece = game.boardmat[row][_col];
+        return piece && new GamePiece(piece, row, _col)});
     var badPiece = false;
     if (badPiece = (checkLeft || checkRight || checkUp || checkDown))
         return ("GamePiece adjacent to incompatible piece: " +
-                badPiece.color + " " + badPiece.shape);
+                badPiece.piece.color + " " + badPiece.piece.shape);
 
     // check if piece played in same row or column as past pieces this turn}
     function sameRowOrCol(otherpiece) {
@@ -160,6 +182,8 @@ function addGamePiece(gamepiece) {
     //  }
     //  console.log('');
     // }
+
+    return points+1;  // get one point for placing a piece
 }
 
 // find player from request cookie
@@ -295,7 +319,7 @@ function handleGame(request, response, path) {
                         var gp = new GamePiece(piece, row, column);
                         console.info('adding piece:'+JSON.stringify(gp));
                         var resp = addGamePiece(gp);
-                        if (typeof resp !== "undefined") {
+                        if (typeof resp === "string") {
                             // add gamepiece failed
                             response.writeHead(409, {'Content-Type': 'text/json'});
                             response.write(resp, 'utf-8');
@@ -303,6 +327,7 @@ function handleGame(request, response, path) {
                             return;
                         } else {
                             // add gamepiece succeeded
+                            player.points += resp;
                             player.pieces.splice(idx, 1);
                             respOk(response, '', 'text/json');
                         }

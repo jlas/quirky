@@ -24,8 +24,8 @@ function getPlayers() {
         var turn;
         var players = [];
         for (p in data) {
-            players.push(p);
-            if (p['has_turn'])
+            players.push(p + " (" + data[p]['points'] + ")");
+            if (data[p]['has_turn'])
                 turn = p;
         }
 
