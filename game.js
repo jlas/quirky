@@ -81,7 +81,7 @@ function respOk (response, data, type) {
 // add a game piece to the board, check that:
 //  1. game piece doesn't already exist
 //  2. game piece is not adjacent to non-compatible piece
-// return nothing if Success, otherwise return an error json
+// return: nothing if Success, otherwise return an error json
 function addGamePiece(gamepiece) {
 
     var row = gamepiece.row;
@@ -90,28 +90,42 @@ function addGamePiece(gamepiece) {
     if (typeof game.boardmat[row][col] !== "undefined")
         return "GamePiece already exists.";
 
-    // helper function, return true if adjacent piece is compatible
-    function _adjacentPiece(piece, adjacent) {
-        if (typeof adjacent === 'undefined')
-            return true;
-        var samecolor = (adjacent.color == piece.color);
-        var sameshape = (adjacent.shape == piece.shape);
+    // Helper function, to check whether it is valid to place a piece
+    // param piece: the piece object being placed
+    // param getAdjacent: a function that returns an adjacent piece
+    // return: false if valid placement, otherwise return the offending piece
+    function _adjacentPieces(piece, getAdjacent) {
+        for (var i=1; i<=2; i++) {
+            adjacent = getAdjacent(i);
+            if (typeof adjacent === 'undefined')
+                return false;
+            var samecolor = (adjacent.color == piece.color);
+            var sameshape = (adjacent.shape == piece.shape);
 
-        console.log('piece: ' + piece.color + ' ' + piece.shape +
-                    ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
+            console.log('piece: ' + piece.color + ' ' + piece.shape +
+                        ', adjacent: ' + adjacent.color + ' ' + adjacent.shape);
 
-        // either samecolor or sameshape, not both
-        if ((samecolor || sameshape) && !(samecolor && sameshape))
-            return true;
-        return false
+            // either samecolor or sameshape, not both
+            if ((samecolor || sameshape) && !(samecolor && sameshape))
+                continue;
+            return adjacent;
+        }
+        return false;
     }
 
     // check if adjacent pieces are compatible
-    if (!(_adjacentPiece(gamepiece.piece, game.boardmat[row-1][col]) &&
-          _adjacentPiece(gamepiece.piece, game.boardmat[row+1][col]) &&
-          _adjacentPiece(gamepiece.piece, game.boardmat[row][col-1]) &&
-          _adjacentPiece(gamepiece.piece, game.boardmat[row][col+1])))
-        return "GamePiece adjacent to incompatible piece.";
+    var checkLeft = _adjacentPieces(gamepiece.piece, function(offset) {
+        return game.boardmat[row-offset][col]});
+    var checkRight =_adjacentPieces(gamepiece.piece, function(offset) {
+        return game.boardmat[row+offset][col]});
+    var checkUp =_adjacentPieces(gamepiece.piece, function(offset) {
+        return game.boardmat[row][col-offset]});
+    var checkDown =_adjacentPieces(gamepiece.piece, function(offset) {
+        return game.boardmat[row][col+offset]});
+    var badPiece = false;
+    if (badPiece = (checkLeft || checkRight || checkUp || checkDown))
+        return ("GamePiece adjacent to incompatible piece: " +
+                badPiece.color + " " + badPiece.shape);
 
     // check if piece played in same row or column as past pieces this turn}
     function sameRowOrCol(otherpiece) {
