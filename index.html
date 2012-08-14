@@ -1,69 +1,68 @@
 <html>
-<body>
+  <body>
 
-<script src="jquery.min.js" type="text/javascript"></script>
-<script src="jquery-ui.min.js" type="text/javascript" ></script>
-<script src="jquery.cookie.js" type="text/javascript"></script>
+    <script src="jquery.min.js" type="text/javascript"></script>
+    <script src="jquery-ui.min.js" type="text/javascript" ></script>
+    <script src="jquery.cookie.js" type="text/javascript"></script>
 
-<script src="game-client.js" type="text/javascript"></script>
-<link href="game-style.css" rel="stylesheet" type="text/css"></style>
+    <script src="game-client.js" type="text/javascript"></script>
+    <link href="game-style.css" rel="stylesheet" type="text/css" />
 
-<!--
-<div id="add_piece" style="display: none">
-Shape: <select id="shape" >
-  <option value="circle">Circle</option>
-  <option value="star">Star</option>
-  <option value="diamond">Diamond</option>
-  <option value="square">Square</option>
-  <option value="triangle">Triangle</option>
-  <option value="clover">Clover</option>
-</select>
-Color: <select id="color">
-  <option value="red">Red</option>
-  <option value="orange">Orange</option>
-  <option value="yellow">Yellow</option>
-  <option value="green">Green</option>
-  <option value="blue">Blue</option>
-  <option value="purple">Purple</option>
-</select>
-Row: <input id="row" type="number"></input>
-Column: <input id="column" type="number"></input>
-<button>Add Piece</button>
-</div>
--->
+    <!--
+        <div id="add_piece" style="display: none">
+          Shape: <select id="shape" >
+            <option value="circle">Circle</option>
+            <option value="star">Star</option>
+            <option value="diamond">Diamond</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="clover">Clover</option>
+          </select>
+          Color: <select id="color">
+            <option value="red">Red</option>
+            <option value="orange">Orange</option>
+            <option value="yellow">Yellow</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+          </select>
+          Row: <input id="row" type="number">
+          Column: <input id="column" type="number">
+          <button>Add Piece</button>
+        </div>
+        -->
 
-<div style="overflow: auto">
+    <div style="overflow: auto">
 
-<div style="float: left">
-<p>Board:</p>
-<div id="board"></div>
-</div>
+      <div style="float: left">
+        <p>Board:</p>
+        <div id="board"></div>
+      </div>
 
-<div style="float: left">
+      <div id="sideboard" style="float: left">
 
-<p>Pieces Left:
-<span id="game_pieces"></span>
-</p>
+        <p>Pieces Left:
+          <span id="game_pieces"></span>
+        </p>
 
-<p>Players:
-<span id="players"></span>
-</p>
+        <p>Players:
+          <span id="players"></span>
+        </p>
 
-<div id="turn"></div>
-</p>
+        <div id="turn"></div>
 
-<p>My Pieces:</p>
-<div id="pieces"></div>
+        <p>My Pieces:</p>
+        <div id="pieces"></div>
 
-<div id="add_player" style="display: none; float: left">
-Name: <input type="text"></input>
-<button>Add Player</button>
-</div>
+        <div id="add_player" style="display: none; float: left">
+          Name: <input type="text" />
+          <button>Add Player</button>
+        </div>
 
-<div id="errors"></div>
+        <div id="errors"></div>
 
-</div>
-</div>
+      </div>
+    </div>
 
-</body>
+  </body>
 </html>

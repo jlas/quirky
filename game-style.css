@@ -23,6 +23,14 @@
 
 .snapgrid {}
 
+.bold {
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+}
+
 #board {
     height: 400px;
     width: 400px;
@@ -30,10 +38,17 @@
     border: solid 1px;
 }
 
-.bold {
-    font-weight: bold;
+#sideboard {
+    color: white;
+    border: solid 466B74;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 1em;
+    background-color: 678187;
+    box-shadow: 5px 5px 5px black;
 }
 
-.error {
-    color: red;
+body {
+    background-image: url("light_noise_diagonal.png");
+    font-family: "Helvetica", "Open Sans", sans-serif;
 }

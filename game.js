@@ -11,7 +11,8 @@ var static_files = {
     'game-style.css': fs.readFileSync('game-style.css'),
     'jquery.min.js': fs.readFileSync('jquery/jquery.min.js'),
     'jquery-ui.min.js': fs.readFileSync('jquery/jquery-ui.min.js'),
-    'jquery.cookie.js': fs.readFileSync('jquery/jquery.cookie.js')
+    'jquery.cookie.js': fs.readFileSync('jquery/jquery.cookie.js'),
+    'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png")
 }
 
 function Game () {
