@@ -81,7 +81,7 @@ function onGetPlayers(pdata) {
         if (my_player["has_turn"]) {
             $("#turn").append("It's your turn! <button>End my turn</button>");
             $("#turn > button")[0].onclick = function() {
-                $.post("/players", {end_turn: true},
+                $.post("/games/test/players", {end_turn: true},
                        function() {getPlayers();});
             };
         }
@@ -94,7 +94,7 @@ function onGetPlayers(pdata) {
  * Process player data.
  */
 function getPlayers() {
-    $.getJSON("/players", onGetPlayers);
+    $.getJSON("/games/test/players", onGetPlayers);
 }
 
 function getMyPieces(player) {
@@ -127,7 +127,7 @@ function onPieceDrop(event, ui) {
     var piece = $(ui.draggable).data()['piece'];
     $.ajax({
         type: 'POST',
-        url: "/game/board",
+        url: "/games/test/board",
         data: {
             shape: piece['shape'],
             color: piece['color'],
@@ -153,7 +153,7 @@ function getBoard() {
     var rows = 0, cols = 0;
     var dimensions = {};
 
-    $.getJSON("/game/dimensions", function (data) {
+    $.getJSON("/games/test/dimensions", function (data) {
         var dimensions = data;
         // add 5 for each side since players can add up to 5 pieces per turn
         var top = dimensions["top"] - board_margin;
@@ -181,7 +181,7 @@ function getBoard() {
         //$("#board").css("width", (($(".grid").width()) * 10))
         //$("#board").css("height", (($(".grid").height()) * 10))
 
-        $.getJSON("/game/board", function (data) {
+        $.getJSON("/games/test/board", function (data) {
             // place pieces on board
             if (data.length > 0) {
                 for (i in data) {
@@ -226,7 +226,7 @@ function getBoard() {
 }
 
 function getGamePieces() {
-    $.getJSON("/game/pieces", function(data) {
+    $.getJSON("/games/test/pieces", function(data) {
         $("#game_pieces").empty();
         var npieces = 0;
         for (var i in data)
@@ -243,7 +243,7 @@ $(function() {
     //setInterval("getPlayers()", 2000);
 
     $("#add_player > button")[0].onclick = function() {
-        $.post("/players", {name: $("#add_player > input")[0].value},
+        $.post("/games/test/players", {name: $("#add_player > input")[0].value},
                function() {getPlayers();});
     };
 

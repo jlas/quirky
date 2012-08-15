@@ -105,11 +105,13 @@ function respOk (response, data, type) {
     response.end();
 }
 
-// add a game piece to the board, check that:
-//  1. game piece doesn't already exist
-//  2. game piece is not adjacent to non-compatible piece
-// return: integer of points if Success, otherwise return an error string
-function addGamePiece(gamepiece) {
+/**
+ * Add a game piece to the board, check that:
+ *  1. game piece doesn't already exist
+ *  2. game piece is not adjacent to non-compatible piece
+ * return: integer of points if Success, otherwise return an error string
+ */
+function addGamePiece(game, gamepiece) {
 
     var row = gamepiece.row;
     var col = gamepiece.column;
@@ -118,10 +120,12 @@ function addGamePiece(gamepiece) {
     if (typeof game.boardmat[row][col] !== "undefined")
         return "GamePiece already exists.";
 
-    // Helper function, to check whether it is valid to place a piece
-    // param piece: the piece object being placed
-    // param getAdjacent: a function that returns an adjacent GamePiece
-    // return: false if valid placement, otherwise return the offending GamePiece
+    /**
+     * Helper function, to check whether it is valid to place a piece
+     * param piece: the piece object being placed
+     * param getAdjacent: a function that returns an adjacent GamePiece
+     * return: false if valid placement, otherwise return the offending GamePiece
+     */
     function _adjacentPieces(piece, getAdjacent) {
         for (var i=1; i<=6; i++) {
             adjacent = getAdjacent(i);
@@ -210,7 +214,7 @@ function addGamePiece(gamepiece) {
 }
 
 // find player from request cookie
-function playerFromReq(request, response) {
+function playerFromReq(request, response, game) {
     var jar = new cookies(request, response);
     var p = jar.get('player');
     return game.players[p];
@@ -225,9 +229,11 @@ function requestBody(request, onEnd) {
     });
 }
 
-// end the turn for the player and start for the next
-// @param player: the player whose turn will end
-function switchPlayers(player) {
+/**
+ * End the turn for the player and start for the next.
+ * @param {obj} player: the player whose turn will end
+ */
+function switchPlayers(game, player) {
     player.has_turn = false;
 
     // clear pieces played this turn
@@ -245,19 +251,24 @@ function switchPlayers(player) {
         6 - next.pieces.length));
 }
 
-function handlePlayers(request, response, path) {
+/**
+ * Handle a player resource transaction.
+ * - POST to add player to the game.
+ * - GET player pieces
+ */
+function handlePlayers(request, response, game, path) {
 
     if (!path.length) {
         // return info on the players collection
 
         if (request.method == "POST") {
-            var player = playerFromReq(request, response);
+            var player = playerFromReq(request, response, game);
             if (player)
                 // end turn
                 // TODO should this be under /players/<name>/?
                 var func = function (form) {
                     if (form && form.end_turn) {
-                        switchPlayers(player);
+                        switchPlayers(game, player);
                         respOk(response);
                     }
                 }
@@ -280,7 +291,7 @@ function handlePlayers(request, response, path) {
                     }
                 }
             requestBody(request, func);
-            return
+            return;
         }
         else
             var r = JSON.stringify(game.players);
@@ -305,15 +316,21 @@ function handlePlayers(request, response, path) {
     respOk(response, r, 'text/json');
 }
 
-function handleGame(request, response, path) {
-
+/**
+ * Handle a game resource transaction.
+ * - POST to add piece to the board.
+ * - Forward player transactions to separate function.
+ * - GET pieces on board & in bag
+ * - GET dimensions
+ */
+function handleGame(request, response, game, path) {
     switch(path[0]) {
     case 'board':
         // add pieces to the board
         if (request.method == "POST") {
             requestBody(request, function(form) {
 
-                var player = playerFromReq(request, response);
+                var player = playerFromReq(request, response, game);
                 console.info('adding pieces, player:'+player.name);
                 console.info('form info:'+JSON.stringify(form));
 
@@ -341,7 +358,7 @@ function handleGame(request, response, path) {
                     if (idx > -1) {
                         var gp = new GamePiece(piece, row, column);
                         console.info('adding piece:'+JSON.stringify(gp));
-                        var resp = addGamePiece(gp);
+                        var resp = addGamePiece(game, gp);
                         if (typeof resp === "string") {
                             // add gamepiece failed
                             response.writeHead(409, {'Content-Type': 'text/json'});
@@ -362,6 +379,9 @@ function handleGame(request, response, path) {
         // get pieces on the board
         var r = JSON.stringify(game.board);
         break;
+    case 'players':
+        handlePlayers(request, response, game, path.slice(1));
+        return;
     case 'pieces':
         // get pieces in the bag
         var r = JSON.stringify(game.pieces);
@@ -372,11 +392,22 @@ function handleGame(request, response, path) {
     respOk(response, r, 'text/json');
 }
 
-//var bob = new Player('bob');
-//bob.pieces.push(new Piece('circle', 'red'));
-//bob.pieces.push(new Piece('star', 'blue'));
+/**
+ * Handle transaction on game collection resource.
+ */
+function handleGames(request, response, path) {
+    if (!path.length) {
+        // return info on the games collection
+        var r = JSON.stringify(Object.keys(games));
+        respOk(response, r, 'text/json');
+    } else {
+        // return info on a specifc game
+        var game = games[path.shift()];
+        handleGame(request, response, game, path);
+    }
+}
 
-var game = new Game();
+var games = {'test': new Game()};
 
 server = http.createServer();
 
@@ -390,11 +421,8 @@ server.on('request', function(request, response) {
     //console.log('got path:'+JSON.stringify(path));
 
     switch(path[0]) {
-    case 'players':
-        handlePlayers(request, response, path.slice(1));
-        break;
-    case 'game':
-        handleGame(request, response, path.slice(1));
+    case 'games':
+        handleGames(request, response, path.slice(1));
         break;
     default:
         var f;
