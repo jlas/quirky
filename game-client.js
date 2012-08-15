@@ -38,52 +38,63 @@ var ushapes = {
     "clover": "&#9827;"
 }
 
-function getPlayers() {
+// right pointing finger
+var finger = "&#9755;";
+
+/**
+ * Operates on player data returned from server.
+ * @param {obj} pdata json data from the server
+ */
+function onGetPlayers(pdata) {
+    var idx;
+    var players = [];
     var my_player = $.cookie("player");
 
-    $.getJSON("/players", function (data) {
-        var idx;
-        var turn;
-        var players = [];
-        for (p in data) {
-            players.push(p + " (" + data[p]['points'] + ")");
-            if (data[p]['has_turn'])
-                turn = p;
+    $("#players").empty();
+    $("#pieces").empty();
+    $("#turn").empty();
+
+    // display all players
+    for (p in pdata) {
+        var turn = pdata[p]['has_turn'] ? finger : "";
+        $("#players").append(
+            "<tr>"+
+            "<td class='pturn'>"+turn+"</td>"+
+            "<td class='pdata'>"+p+"</td>"+
+            "<td class='pdata'>"+pdata[p]['points']+"</td>"+
+            "</tr>");
+    }
+
+    // if no players to display, hide the player table
+    if ($.isEmptyObject(pdata))
+        $("#player_table").hide();
+
+    // check if client has a valid player or allow him to add one
+    my_player = pdata[my_player];
+    if (typeof my_player === "undefined") {
+        $("#add_player").show();
+    } else {
+        getMyPieces(my_player);
+        $("#add_piece").show();
+        $("#add_player").hide();
+        // allow player to end his turn
+        if (my_player["has_turn"]) {
+            $("#turn").append("It's your turn! <button>End my turn</button>");
+            $("#turn > button")[0].onclick = function() {
+                $.post("/players", {end_turn: true},
+                       function() {getPlayers();});
+            };
         }
+    }
 
-        $("#players").empty();
-        $("#pieces").empty();
-        $("#turn").empty();
+    getGamePieces();
+}
 
-        // display all players
-        $("#players").html(players.join(", "));
-
-        // check if client has a valid player or allow him to add one
-        my_player = data[my_player];
-        if (typeof my_player === "undefined") {
-            $("#add_player").show();
-            $("#pieces").html("");
-            if (turn)
-                turn = "It is "+turn['name']+"'s turn.";
-        } else {
-            getMyPieces(my_player);
-            $("#add_piece").show();
-            $("#add_player").hide();
-            // allow player to end his turn
-            if (my_player["has_turn"]) {
-                turn = "It is your turn.";
-                $("#turn").append("<button>End my turn</button>");
-                $("#turn > button")[0].onclick = function() {
-                    $.post("/players", {end_turn: true},
-                           function() {getPlayers();});
-                };
-            }
-        }
-
-        if (turn)
-            $("#turn").prepend(turn+" ");
-        getGamePieces();
-    });
+/**
+ * Process player data.
+ */
+function getPlayers() {
+    $.getJSON("/players", onGetPlayers);
 }
 
 function getMyPieces(player) {
@@ -106,9 +117,10 @@ function getMyPieces(player) {
         });
 }
 
-// When piece is dropped, send a POST to the server to add to board.
-// Either the piece will be added or we get an error back for invalid
-// placements.
+/**
+ * When piece is dropped, send a POST to the server to add to board. Either the
+ * piece will be added or we get an error back for invalid placements.
+ */
 function onPieceDrop(event, ui) {
     var col = $(this).data()['col'];
     var row = $(this).data()['row'];

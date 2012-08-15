@@ -62,18 +62,23 @@
 
       <div id="sideboard" style="float: left">
 
+        <div id="turn"></div>
+
         <p>Pieces Left:
           <span id="game_pieces"></span>
         </p>
 
-        <p>Players:
-          <span id="players"></span>
-        </p>
-
-        <div id="turn"></div>
-
         <p>My Pieces:</p>
         <div id="pieces"></div>
+
+        <table id="player_table">
+          <thead>
+            <th class='pturn'></th>
+            <th class='pdata'>Player</th>
+            <th class='pdata'>Score</th>
+          </thead>
+          <tbody id="players"><tbody>
+        </div>
 
         <div id="add_player" style="display: none; float: left">
           Name: <input type="text" />
