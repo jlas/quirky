@@ -74,7 +74,12 @@ body {
     box-shadow: 5px 5px 5px black;
 }
 
-#player_table {
+#player_table hr {
+    float: left;
+    width: 100%;
+}
+
+#player_table table {
     color: white;
     text-align: left;
 }
