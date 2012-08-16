@@ -285,8 +285,10 @@ function handlePlayers(request, response, game, path) {
                             p.has_turn = true;
 
                         // TODO replace set cookie with cookie API?
-                        response.writeHead(200, {'Content-Type': 'text/json',
-                                    "Set-Cookie": ["player=" + form.name]});
+                        response.writeHead(200,{
+                            'Content-Type': 'text/json',
+                            "Set-Cookie": ["player="+form.name+"; Path=/"]
+                        });
                         response.end();
                     }
                 }
