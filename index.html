@@ -53,14 +53,54 @@
         </div>
         -->
 
-    <div style="overflow: auto">
+    <!-- Lobby -->
+
+    <div id="lobby">
+      <div id="lobby_left">
+        <div id="lobby_head_panel" class="panel">
+          Quirky Game Lobby
+        </div>
+      </div>
+      <div id="lobby_game_panel" class="panel">
+        <table>
+          <thead>
+            <th>Game Room</th>
+            <th>Players</th>
+            <th></th>
+          </thead>
+          <tbody id="games"></tbody>
+        </table>
+        <div id="add_game">
+          <input type="text" />
+          <button>Create Game Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+
+    <div id="chat_panel" class="panel" style="display: none;">
+      <div id="chat_log" class="chat"></div>
+      <div id="add_guest" style="display: none">
+        Your name: <input type="text" />
+        <button>Ok</button>
+      </div>
+      <div id="chat_input" style="display: none">
+        <input type="text" />
+        <button>Chat</button>
+      </div>
+    </div>
+
+    <!-- Game Room -->
+
+    <div id="game_room" style="overflow: auto; display: none">
 
       <div style="float: left">
         <p>Board:</p>
         <div id="board"></div>
       </div>
 
-      <div id="sideboard" style="float: left">
+      <div id="sideboard" style="float: left" class="panel">
 
         <div id="turn"></div>
 

@@ -62,27 +62,28 @@ body {
     border: solid 1px;
 }
 
-/* sideboard */
+/* panel */
 
-#sideboard {
+.panel {
     color: white;
     border: solid 466B74;
     border-radius: 1em;
     padding: 1em;
-    margin: 1em;
     background-color: 678187;
     box-shadow: 5px 5px 5px black;
 }
 
-#player_table hr {
+.panel hr {
     float: left;
     width: 100%;
 }
 
-#player_table table {
+.panel table {
     color: white;
     text-align: left;
 }
+
+/* player table */
 
 .pturn {
     width: 10%
@@ -90,4 +91,54 @@ body {
 
 .pdata {
     width: 40%;
+}
+
+/* lobby */
+
+#lobby_left {
+    float: left;
+    width: 60%;
+    height: 90%;
+    margin: 1% 1% 1% 1%;
+}
+
+#lobby_game_panel {
+    float: right;
+    width: 30%;
+    height: 90%;
+    margin: 1% 1% 1% 1%;
+}
+
+#lobby_head_panel {
+    height: 10%;
+    width: 100%;
+    float: left;
+    margin: 0% 0% 1% 0%;
+}
+
+.lobby_chat_panel {
+    height: 80%;
+    width: 100%;
+    float: left;
+    margin: 0% 0% 1% 0%;
+}
+
+/* chat */
+
+.chat {
+    background: white;
+    width: 98%;
+    height: 88%;
+}
+
+#chat_input, #add_guest {
+    margin: 1% 0% 0% 0%;
+}
+
+#chat_input input {
+    width: 85%;
+}
+
+#add_guest input {
+    width: 50%
 }

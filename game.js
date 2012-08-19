@@ -37,8 +37,8 @@ var static_files = {
     'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png")
 }
 
-function Game () {
-
+function Game (name) {
+    this.name = name;
     this.board = [];  // list representation
     this.boardmat = [];  // matrix representation
     for (var i=0; i<181; i++)
@@ -55,6 +55,10 @@ function Game () {
     for (c in colors)
         for (s in shapes)
             this.pieces.push({'piece': new Piece(shapes[s], colors[c]), 'count': 3});
+}
+
+Game.prototype.toJSON = function() {
+    return {'name': this.name, 'players': this.players};
 }
 
 Game.prototype.drawPieces = function(num) {
@@ -400,7 +404,7 @@ function handleGame(request, response, game, path) {
 function handleGames(request, response, path) {
     if (!path.length) {
         // return info on the games collection
-        var r = JSON.stringify(Object.keys(games));
+        var r = JSON.stringify(games);
         respOk(response, r, 'text/json');
     } else {
         // return info on a specifc game
@@ -409,7 +413,7 @@ function handleGames(request, response, path) {
     }
 }
 
-var games = {'test': new Game()};
+var games = {'test': new Game('test')};
 
 server = http.createServer();
 
