@@ -37,6 +37,8 @@ var static_files = {
     'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png")
 }
 
+var CHATLINES = 1000;  // number of lines to store from chats
+
 function Game (name) {
     this.name = name;
     this.board = [];  // list representation
@@ -224,12 +226,17 @@ function playerFromReq(request, response, game) {
     return game.players[p];
 }
 
+// extract data from query string
+function requestQuery(request) {
+    return querystring.parse(url.parse(request.url).query);
+}
+
 // extract data from request body and pass to onEnd functon
 function requestBody(request, onEnd) {
     var fullBody = '';
     request.on('data', function(d) {fullBody += d.toString()});
     request.on('end', function() {
-        onEnd(querystring.parse(fullBody))
+        onEnd(querystring.parse(fullBody));
     });
 }
 
@@ -413,6 +420,52 @@ function handleGames(request, response, path) {
     }
 }
 
+/**
+ * Handle transaction on chat.
+ * @param chat {list}: a chat object, which is a list of
+ *    {id: {number}, name: {string}, input: {string}} objects
+ */
+function handleChat(request, response, chat) {
+    if (request.method == "POST") {
+        // add a line to the chat log
+        requestBody(request, function(form) {
+            while (chat.length > CHATLINES)
+                chat.shift();
+
+            /* If data is present in the chat, then increment the last id,
+             * otherwise start at 0.
+             */
+            if (chat.length)
+                var id = chat[chat.length-1]['id']+1;
+            else
+                var id = 0;
+            chat.push({
+                id: id,  // chat line id
+                name: form.name,  // the user's name
+                input: form.input  // the user's text input
+            });
+            respOk(response, '', 'text/json');
+        });
+    } else {
+        /* Return chat data. If lastid is specified, then we only return
+         * chat lines since this id.
+         */
+        var form = requestQuery(request);
+        var lastid = +form.lastid;
+        if (lastid >= 0) {
+            for (var i=0; i<chat.length; i++) {
+                if (chat[i]['id'] == lastid)
+                    break;
+            }
+            var r = JSON.stringify(chat.slice(i+1));
+        } else {
+            var r = JSON.stringify(chat);
+        }
+        respOk(response, r, 'text/json');
+    }
+}
+
+var chat = [];
 var games = {'test': new Game('test')};
 
 server = http.createServer();
@@ -429,6 +482,9 @@ server.on('request', function(request, response) {
     switch(path[0]) {
     case 'games':
         handleGames(request, response, path.slice(1));
+        break;
+    case 'chat':
+        handleChat(request, response, chat);
         break;
     default:
         var f;

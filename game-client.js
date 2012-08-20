@@ -47,6 +47,7 @@ var ADDPIECE = '#add_piece';
 var ADDPLAYER = '#add_player';
 var BOARD = '#board';
 var CHATIN = '#chat_input';
+var CHATLOG = '#chat_log';
 var ERRORS = '#errors';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
@@ -281,15 +282,20 @@ function getGamePieces() {
  * @param {obj} game: if specified, post the chat to the private game chat,
  *     otherwise post to the global chat.
  */
-function getChatIn(name, game) {
+function drawChatIn(name, game) {
     $(CHATIN).show();
     $(CHATIN+"> button")[0].onclick = function() {
         if (typeof game !== 'undefined')
             var resource = "/games/"+game+"/chat";
         else
             var resource = "/chat";
-        $.post(resource, {input: $(CHATIN+"> input")[0].value,
-                          name: name});
+        $.post(resource, {
+            input: $(CHATIN+"> input")[0].value,
+            name: name
+        }, function() {
+            $(CHATIN+"> input").val('');  // post was succesful, so clear input
+            drawChatLog('/chat');
+        });
     }
 }
 
@@ -298,28 +304,51 @@ function getChatIn(name, game) {
  * - Set the player cookie when the user submits and switch to displaying the
  * chat input.
  */
-function getAddGuest() {
+function drawAddGuest() {
     $(ADDGUEST).show();
     $(ADDGUEST+"> button")[0].onclick = function() {
         var name =  $(ADDGUEST+"> input")[0].value;
         $.cookie("player", name);
         $(ADDGUEST).hide();
-        getChatIn(name);
+        drawChatIn(name);
     };
 }
 
 /**
+ * Draw the chat log.
+ * Implemented as a closure to keep state about what the last line on the chat
+ * received from the server was.
+ */
+var drawChatLog = function() {
+    var lastids = {};
+    var my_player = $.cookie("player");
+    return function (uri) {
+        $.getJSON(uri, {lastid: lastids[uri]}, function(data) {
+            for (var i=0; i<data.length; i++) {
+                var name = data[i]['name'];
+                var msgcls = (name == my_player) ? "mymsg": "othermsg";
+                $(CHATLOG).append('<div><span class="'+msgcls+'">'+
+                                  data[i]['name']+'</span>: '+
+                                  data[i]['input']+'</div>');
+            }
+            lastids[uri] = data[i-1] ? data[i-1]['id']: undefined;
+        });
+    };
+}();
+
+/**
  * Draw the lobby.
  */
-function getLobby(games) {
+function drawLobby(games) {
     var my_player = $.cookie("player");
     $(LOBBYLEFT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     $(CHATPNL).show();
+    drawChatLog('/chat');
     if (!my_player)
-        getAddGuest();
+        drawAddGuest();
     else
-        getChatIn(my_player);
+        drawChatIn(my_player);
     for (var i in games)
         $(GAMES).append("<tr>"+
                         "<td>"+games[i]['name']+"</td>"+
@@ -339,7 +368,7 @@ function gameOrLobby(games) {
     if (typeof games[my_game] === 'undefined') {
         $.removeCookie('game');
         $(LOBBY).show()
-        getLobby(games);
+        drawLobby(games);
     } else {
         $(GAMEROOM).show();
         getPlayers(my_game);

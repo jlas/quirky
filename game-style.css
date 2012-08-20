@@ -127,8 +127,18 @@ body {
 
 .chat {
     background: white;
+    color: black;
     width: 98%;
     height: 88%;
+    overflow: auto;
+}
+
+.mymsg {
+    color: red;
+}
+
+.othermsg {
+    color: blue;
 }
 
 #chat_input, #add_guest {
