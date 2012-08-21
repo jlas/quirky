@@ -20,6 +20,8 @@
  * @author juan.lasheras@gmail.com (Juan Lasheras)
  */
 
+"use strict";
+
 var pastels = {
     "green": "#A0E7A0",
     "yellow": "#FFFB8C",
@@ -27,7 +29,7 @@ var pastels = {
     "orange": "#FFAF5A",
     "purple": "#FF8CB6",
     "blue": "#97D0F9"
-}
+};
 
 var ushapes = {
     "circle": "&#9679;",
@@ -36,12 +38,13 @@ var ushapes = {
     "square": "&#9632;",
     "triangle": "&#9650;",
     "clover": "&#9827;"
-}
+};
 
 // right pointing finger
 var finger = "&#9755;";
 
 // Define DOM element IDs
+var ADDGAME = '#add_game';
 var ADDGUEST = '#add_guest';
 var ADDPIECE = '#add_piece';
 var ADDPLAYER = '#add_player';
@@ -73,13 +76,16 @@ function onGetPlayers(pdata) {
     var idx;
     var players = [];
     var my_player = $.cookie("player");
+    var my_game = $.cookie("game");
 
     $(PLAYERS).empty();
     $(PIECES).empty();
     $(TURN).empty();
 
     // display all players
-    for (p in pdata) {
+    for (var p in pdata) {
+        if (!pdata.hasOwnProperty(p))
+            continue;
         var turn = pdata[p]['has_turn'] ? finger : "";
         $(PLAYERS).append(
             "<tr>"+
@@ -98,7 +104,7 @@ function onGetPlayers(pdata) {
     if (typeof my_player === "undefined") {
         $(ADDPLAYER).show();
         $(ADDPLAYER+"> button")[0].onclick = function() {
-            $.post("/games/test/players",
+            $.post("/games/"+my_game+"/players",
                    {name: $(ADDPLAYER+"> input")[0].value},
                    function() {getPlayers();}
                   );
@@ -111,7 +117,7 @@ function onGetPlayers(pdata) {
         if (my_player["has_turn"]) {
             $(TURN).append("It's your turn! <button>End my turn</button>");
             $(TURN+"> button")[0].onclick = function() {
-                $.post("/games/test/players", {end_turn: true},
+                $.post("/games/"+my_game+"/players", {end_turn: true},
                        function() {getPlayers();});
             };
         }
@@ -124,7 +130,7 @@ function onGetPlayers(pdata) {
  * Process player data.
  */
 function getPlayers() {
-    $.getJSON("/games/test/players", onGetPlayers);
+    $.getJSON("/games/"+$.cookie("game")+"/players", onGetPlayers);
 }
 
 /**
@@ -161,7 +167,7 @@ function onPieceDrop(event, ui) {
     var piece = $(ui.draggable).data()['piece'];
     $.ajax({
         type: 'POST',
-        url: "/games/test/board",
+        url: "/games/"+$.cookie("game")+"/board",
         data: {
             shape: piece['shape'],
             color: piece['color'],
@@ -186,11 +192,12 @@ function onPieceDrop(event, ui) {
  * Draw the game board.
  */
 function getBoard() {
+    var game = $.cookie("game");
     var board_margin = 5;
     var rows = 0, cols = 0;
     var dimensions = {};
 
-    $.getJSON("/games/test/dimensions", function (data) {
+    $.getJSON("/games/"+game+"/dimensions", function (data) {
         var dimensions = data;
         // add 5 for each side since players can add up to 5 pieces per turn
         var top = dimensions["top"] - board_margin;
@@ -218,7 +225,7 @@ function getBoard() {
         //$(BOARD).css("width", (($(GRIDCLS).width()) * 10))
         //$(BOARD).css("height", (($(GRIDCLS).height()) * 10))
 
-        $.getJSON("/games/test/board", function (data) {
+        $.getJSON("/games/"+game+"/board", function (data) {
             // place pieces on board
             if (data.length > 0) {
                 for (i in data) {
@@ -266,7 +273,7 @@ function getBoard() {
  * Publish the number of pieces left in the bag.
  */
 function getGamePieces() {
-    $.getJSON("/games/test/pieces", function(data) {
+    $.getJSON("/games/"+$.cookie("game")+"/pieces", function(data) {
         $(GAMEPIECES).empty();
         var npieces = 0;
         for (var i in data)
@@ -282,7 +289,8 @@ function getGamePieces() {
  * @param {obj} game: if specified, post the chat to the private game chat,
  *     otherwise post to the global chat.
  */
-function drawChatIn(name, game) {
+function drawChatIn(name) {
+    var game = $.cookie("game");
     $(CHATIN).show();
     $(CHATIN+"> button")[0].onclick = function() {
         if (typeof game !== 'undefined')
@@ -333,8 +341,37 @@ var drawChatLog = function() {
             }
             lastids[uri] = data[i-1] ? data[i-1]['id']: undefined;
         });
-    };
+   };
 }();
+
+/**
+ * Draw the game list.
+ */
+function drawGameList(games) {
+    $(GAMES).empty()
+    for (var i in games) {
+        if (!games.hasOwnProperty(i))
+            continue;
+        var name = games[i]['name'];
+        var node = $("<td>"+name+"</td>")[0];
+        node.onclick = function () {
+            $.cookie('game', name);
+            window.location.href = '/index';
+        };
+        $(GAMES).append("<tr>"+
+                        "<td>"+Object.keys(games[i]['players']).length+"</td>"+
+                        "<td></td>"+
+                        "</tr>");
+        $(GAMES+">tr:last-child").prepend(node);
+    }
+    $(ADDGAME+"> button")[0].onclick = function() {
+        var name = $(ADDGAME+"> input")[0].value;
+        $.post('/games', {name: name}, function() {
+            $(ADDGAME+"> input").val('');  // post was succesful, so clear input
+            $(GAMES).append("<tr><td>"+name+"</td><td>0</td><td></td></tr>");
+        });
+    }
+}
 
 /**
  * Draw the lobby.
@@ -349,12 +386,7 @@ function drawLobby(games) {
         drawAddGuest();
     else
         drawChatIn(my_player);
-    for (var i in games)
-        $(GAMES).append("<tr>"+
-                        "<td>"+games[i]['name']+"</td>"+
-                        "<td>"+Object.keys(games[i]['players']).length+"</td>"+
-                        "<td></td>"+
-                        "</tr>");
+    drawGameList(games);
 }
 
 /**
@@ -371,9 +403,9 @@ function gameOrLobby(games) {
         drawLobby(games);
     } else {
         $(GAMEROOM).show();
-        getPlayers(my_game);
-        getBoard(my_game);
-        getGamePieces(my_game);
+        getPlayers();
+        getBoard();
+        getGamePieces();
     }
 }
 

@@ -410,9 +410,20 @@ function handleGame(request, response, game, path) {
  */
 function handleGames(request, response, path) {
     if (!path.length) {
-        // return info on the games collection
-        var r = JSON.stringify(games);
-        respOk(response, r, 'text/json');
+        if (request.method == "POST") {
+            // add a new game object
+            requestBody(request, function(form) {
+                var gamenm = form.name;
+                while (games[gamenm])  // game already exists
+                    gamenm = gamenm+Math.floor(Math.random()*10);
+                games[gamenm] = new Game(gamenm);
+                respOk(response, '', 'text/json');
+            });
+        } else {
+            // return info on the games collection
+            var r = JSON.stringify(games);
+            respOk(response, r, 'text/json');
+        }
     } else {
         // return info on a specifc game
         var game = games[path.shift()];
@@ -466,9 +477,8 @@ function handleChat(request, response, chat) {
 }
 
 var chat = [];
-var games = {'test': new Game('test')};
-
-server = http.createServer();
+var games = {};
+var server = http.createServer();
 
 server.on('request', function(request, response) {
 
