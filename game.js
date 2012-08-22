@@ -48,6 +48,7 @@ function Game (name) {
     this.pieces = [];
     this.players = {};
     this.turn_pieces = [];  // pieces played this turn
+    this.chat = []  // chat log
 
     // board dimensions
     this.dimensions = {'top': 90, 'right': 90, 'bottom': 90, 'left': 90};
@@ -398,6 +399,9 @@ function handleGame(request, response, game, path) {
     case 'pieces':
         // get pieces in the bag
         var r = JSON.stringify(game.pieces);
+        break;
+    case 'chat':
+        handleChat(request, response, game.chat);
         break;
     case 'dimensions':
         var r = JSON.stringify(game.dimensions);

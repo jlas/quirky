@@ -62,6 +62,30 @@ body {
     border: solid 1px;
 }
 
+#board_container {
+    float: left;
+    height: 100%;
+    width: 50%;
+}
+
+#sideboard {
+    float: left;
+    margin: 1% 1% 1% 1%;
+    width: 40%;
+}
+
+.game_chat_panel {
+    float: left;
+    margin: 1% 1% 1% 1%;
+    width: 40%;
+    height: 35%;
+}
+
+#pieces {
+    float: left;
+    width: 100%;
+}
+
 /* panel */
 
 .panel {
@@ -84,6 +108,11 @@ body {
 }
 
 /* player table */
+
+#player_table {
+    float: left;
+    width: 100%;
+}
 
 .pturn {
     width: 10%

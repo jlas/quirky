@@ -285,11 +285,9 @@ function getGamePieces() {
 
 /**
  * Draw the chat input.
- * @param {str} name: user's name
- * @param {obj} game: if specified, post the chat to the private game chat,
- *     otherwise post to the global chat.
  */
-function drawChatIn(name) {
+function drawChatIn() {
+    var my_player = $.cookie("player");
     var game = $.cookie("game");
     $(CHATIN).show();
     $(CHATIN+"> button")[0].onclick = function() {
@@ -299,10 +297,10 @@ function drawChatIn(name) {
             var resource = "/chat";
         $.post(resource, {
             input: $(CHATIN+"> input")[0].value,
-            name: name
+            name: my_player
         }, function() {
             $(CHATIN+"> input").val('');  // post was succesful, so clear input
-            drawChatLog('/chat');
+            drawChatLog();
         });
     }
 }
@@ -318,7 +316,7 @@ function drawAddGuest() {
         var name =  $(ADDGUEST+"> input")[0].value;
         $.cookie("player", name);
         $(ADDGUEST).hide();
-        drawChatIn(name);
+        drawChatIn();
     };
 }
 
@@ -329,8 +327,10 @@ function drawAddGuest() {
  */
 var drawChatLog = function() {
     var lastids = {};
-    var my_player = $.cookie("player");
-    return function (uri) {
+    return function () {
+        var my_player = $.cookie("player");
+        var my_game = $.cookie("game");
+        var uri = my_game ? '/games/' + my_game + '/chat' : '/chat';
         $.getJSON(uri, {lastid: lastids[uri]}, function(data) {
             for (var i=0; i<data.length; i++) {
                 var name = data[i]['name'];
@@ -341,7 +341,7 @@ var drawChatLog = function() {
             }
             lastids[uri] = data[i-1] ? data[i-1]['id']: undefined;
         });
-   };
+    };
 }();
 
 /**
@@ -381,12 +381,30 @@ function drawLobby(games) {
     $(LOBBYLEFT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     $(CHATPNL).show();
-    drawChatLog('/chat');
+    drawChatLog();
     if (!my_player)
         drawAddGuest();
     else
-        drawChatIn(my_player);
+        drawChatIn();
     drawGameList(games);
+}
+
+/**
+ * Draw the game.
+ */
+function drawGame() {
+    var my_player = $.cookie("player");
+    getPlayers();
+    getBoard();
+    getGamePieces();
+    $(GAMEROOM).append($(CHATPNL)[0]);
+    $(CHATPNL).addClass('game_chat_panel');
+    $(CHATPNL).show();
+    drawChatLog();
+    if (!my_player)
+        drawAddGuest();
+    else
+        drawChatIn();
 }
 
 /**
@@ -403,9 +421,7 @@ function gameOrLobby(games) {
         drawLobby(games);
     } else {
         $(GAMEROOM).show();
-        getPlayers();
-        getBoard();
-        getGamePieces();
+        drawGame();
     }
 }
 
