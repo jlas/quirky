@@ -62,10 +62,11 @@ body {
     border: solid 1px;
 }
 
-#board_container {
+#game_room_main {
     float: left;
     height: 100%;
     width: 50%;
+    margin: 1% 0% 1% 1%
 }
 
 #sideboard {

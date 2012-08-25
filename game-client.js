@@ -55,6 +55,7 @@ var ERRORS = '#errors';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
 var GAMES = '#games';
+var LEAVEGAME = '#leave_game';
 var LOBBY = '#lobby';
 var LOBBYLEFT = '#lobby_left';
 var CHATPNL = '#chat_panel';
@@ -287,11 +288,11 @@ function getGamePieces() {
  * Draw the chat input.
  */
 function drawChatIn() {
-    var my_player = $.cookie("player");
-    var game = $.cookie("game");
     $(CHATIN).show();
     $(CHATIN+"> button")[0].onclick = function() {
-        if (typeof game !== 'undefined')
+        var my_player = $.cookie("player");
+        var game = $.cookie("game");
+        if (game)
             var resource = "/games/"+game+"/chat";
         else
             var resource = "/chat";
@@ -356,7 +357,7 @@ function drawGameList(games) {
         var node = $("<td>"+name+"</td>")[0];
         node.onclick = function () {
             $.cookie('game', name);
-            window.location.href = '/index';
+            location.reload();
         };
         $(GAMES).append("<tr>"+
                         "<td>"+Object.keys(games[i]['players']).length+"</td>"+
@@ -405,6 +406,10 @@ function drawGame() {
         drawAddGuest();
     else
         drawChatIn();
+    $(LEAVEGAME)[0].onclick = function () {
+        $.removeCookie('game');
+        location.reload();
+    };
 }
 
 /**
