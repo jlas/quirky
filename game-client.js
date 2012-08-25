@@ -40,6 +40,9 @@ var ushapes = {
     "clover": "&#9827;"
 };
 
+// My Turn state
+var HAVETURN = null;
+
 // right pointing finger
 var finger = "&#9755;";
 
@@ -69,20 +72,25 @@ var GRIDCLS = '.grid';
 var PIECECLS = '.piece';
 var SNAPGRIDCLS = '.snapgrid';
 
+// Define timeoutIDs for Ajax calls
+var GETPLAYERSTID = null;
+
 /**
- * Operates on player data returned from server.
+ * Process player data.
+ */
+function getPlayers() {
+    $.getJSON("/games/"+$.cookie("game")+"/players", onGetPlayers);
+}
+
+/*
+ * Operates on player data returned from the server.
  * @param {obj} pdata json data from the server
  */
 function onGetPlayers(pdata) {
-    var idx;
-    var players = [];
-    var my_player = $.cookie("player");
-    var my_game = $.cookie("game");
+    // if no players to display, hide the player table
+    $.isEmptyObject(pdata) ? $(PLAYERTBL).hide() : $(PLAYERTBL).show();
 
     $(PLAYERS).empty();
-    $(PIECES).empty();
-    $(TURN).empty();
-
     // display all players
     for (var p in pdata) {
         if (!pdata.hasOwnProperty(p))
@@ -96,42 +104,44 @@ function onGetPlayers(pdata) {
             "</tr>");
     }
 
-    // if no players to display, hide the player table
-    if ($.isEmptyObject(pdata))
-        $(PLAYERTBL).hide();
-
-    // check if client has a valid player or allow him to add one
-    my_player = pdata[my_player];
-    if (typeof my_player === "undefined") {
-        $(ADDPLAYER).show();
-        $(ADDPLAYER+"> button")[0].onclick = function() {
-            $.post("/games/"+my_game+"/players",
-                   {name: $(ADDPLAYER+"> input")[0].value},
-                   function() {getPlayers();}
-                  );
-        };
-    } else {
-        getMyPieces(my_player);
-        $(ADDPIECE).show();
-        $(ADDPLAYER).hide();
-        // allow player to end his turn
-        if (my_player["has_turn"]) {
-            $(TURN).append("It's your turn! <button>End my turn</button>");
-            $(TURN+"> button")[0].onclick = function() {
-                $.post("/games/"+my_game+"/players", {end_turn: true},
-                       function() {getPlayers();});
-            };
+    var my_game = $.cookie("game");
+    var my_player = $.cookie("player");
+    if (my_player) {
+        if (pdata[my_player] === undefined) {
+            // I've got a player name, but we need to add it to the game
+            $.post("/games/"+my_game+"/players", {name: my_player},
+                   function() {getPlayers();});
+        } else if (HAVETURN !== pdata[my_player].has_turn) {
+            HAVETURN = pdata[my_player].has_turn;
+            drawTurnInfo(pdata);
         }
     }
-
-    getGamePieces();
 }
 
 /**
- * Process player data.
+ * Draw player's pieces and It's Your Turn info.
+ * @param {obj} pdata json data from the server
  */
-function getPlayers() {
-    $.getJSON("/games/"+$.cookie("game")+"/players", onGetPlayers);
+function drawTurnInfo(pdata) {
+    var my_game = $.cookie("game");
+    var my_player = pdata[$.cookie("player")];
+
+    $(PIECES).empty();
+    $(TURN).empty();
+    $(ADDPIECE).show();
+
+    // allow player to end his turn
+    if (my_player["has_turn"]) {
+        $(TURN).append("It's your turn! <button>End my turn</button>");
+        $(TURN+"> button")[0].onclick = function() {
+            $.post("/games/"+my_game+"/players", {end_turn: true}, function() {
+                getPlayers();
+            });
+        };
+    }
+    getMyPieces(my_player);
+    getPiecesLeft();
+    getBoard();
 }
 
 /**
@@ -159,6 +169,19 @@ function getMyPieces(player) {
 }
 
 /**
+ * Publish the number of pieces left in the bag.
+ */
+function getPiecesLeft() {
+    $.getJSON("/games/"+$.cookie("game")+"/pieces", function(data) {
+        $(GAMEPIECES).empty();
+        var npieces = 0;
+        for (var i in data)
+            npieces += data[i].count;
+        $(GAMEPIECES).html(npieces);
+    });
+}
+
+/**
  * When piece is dropped, send a POST to the server to add to board. Either the
  * piece will be added or we get an error back for invalid placements.
  */
@@ -183,8 +206,7 @@ function onPieceDrop(event, ui) {
             $(ERRORS).append("<div class='error'>"+jqXHR.responseText+"</div>");
         },
         complete: function() {
-            getBoard();
-            getPlayers();
+            $.getJSON("/games/"+$.cookie("game")+"/players", drawTurnInfo);
         }
     });
 }
@@ -269,20 +291,6 @@ function getBoard() {
         })
     })
 }
-
-/**
- * Publish the number of pieces left in the bag.
- */
-function getGamePieces() {
-    $.getJSON("/games/"+$.cookie("game")+"/pieces", function(data) {
-        $(GAMEPIECES).empty();
-        var npieces = 0;
-        for (var i in data)
-            npieces += data[i].count;
-        $(GAMEPIECES).html(npieces);
-    });
-}
-
 
 /**
  * Draw the chat input.
@@ -397,7 +405,7 @@ function drawGame() {
     var my_player = $.cookie("player");
     getPlayers();
     getBoard();
-    getGamePieces();
+    getPiecesLeft();
     $(GAMEROOM).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('game_chat_panel');
     $(CHATPNL).show();
@@ -409,7 +417,16 @@ function drawGame() {
     $(LEAVEGAME)[0].onclick = function () {
         $.removeCookie('game');
         location.reload();
+        clearTimeout(GETPLAYERSTID);
     };
+
+    // setup future calls
+    function pollPlayers() {
+        getPlayers();
+        GETPLAYERSTID = setTimeout(pollPlayers, 2000);
+    }
+
+    GETPLAYERSTID = setTimeout(pollPlayers, 2000);
 }
 
 /**
@@ -436,24 +453,5 @@ function gameOrLobby(games) {
  * - Otherwise, put him in the lobby.
  */
 $(function() {
-
     $.getJSON("/games", gameOrLobby);
-
-    //setInterval("getPlayers()", 2000);
-
-    /*
-    $("#add_piece > button")[0].onclick = function() {
-        var inputs = $("#add_piece > input");
-        var selects = $("#add_piece > select");
-        $.post("/game/board", {
-            shape: selects[0].value,
-            color: selects[1].value,
-            row: inputs[0].value,
-            column: inputs[1].value
-        }, function() {
-            getBoard();
-            getGamePieces();
-        });
-    };
-    */
 });
