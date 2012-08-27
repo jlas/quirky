@@ -74,6 +74,7 @@ var SNAPGRIDCLS = '.snapgrid';
 
 // Define timeoutIDs for Ajax calls
 var GETPLAYERSTID = null;
+var DRAWCHATTID = null;
 
 /**
  * Process player data.
@@ -341,6 +342,10 @@ var drawChatLog = function() {
         var my_game = $.cookie("game");
         var uri = my_game ? '/games/' + my_game + '/chat' : '/chat';
         $.getJSON(uri, {lastid: lastids[uri]}, function(data) {
+            if ($.isEmptyObject(data)) {
+                // Server returns empty obj if there's nothing new
+                return;
+            }
             for (var i=0; i<data.length; i++) {
                 var name = data[i]['name'];
                 var msgcls = (name == my_player) ? "mymsg": "othermsg";
@@ -386,15 +391,8 @@ function drawGameList(games) {
  * Draw the lobby.
  */
 function drawLobby(games) {
-    var my_player = $.cookie("player");
     $(LOBBYLEFT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
-    $(CHATPNL).show();
-    drawChatLog();
-    if (!my_player)
-        drawAddGuest();
-    else
-        drawChatIn();
     drawGameList(games);
 }
 
@@ -402,18 +400,11 @@ function drawLobby(games) {
  * Draw the game.
  */
 function drawGame() {
-    var my_player = $.cookie("player");
     getPlayers();
     getBoard();
     getPiecesLeft();
     $(GAMEROOM).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('game_chat_panel');
-    $(CHATPNL).show();
-    drawChatLog();
-    if (!my_player)
-        drawAddGuest();
-    else
-        drawChatIn();
     $(LEAVEGAME)[0].onclick = function () {
         $.removeCookie('game');
         location.reload();
@@ -445,6 +436,20 @@ function gameOrLobby(games) {
         $(GAMEROOM).show();
         drawGame();
     }
+    $(CHATPNL).show();
+    drawChatLog();
+    if (!$.cookie("player")) {
+        drawAddGuest();
+    } else {
+        drawChatIn();
+    }
+
+    // setup future calls to get chat
+    function pollChat() {
+        drawChatLog();
+        DRAWCHATTID = setTimeout(pollChat, 2000);
+    }
+    DRAWCHATTID = setTimeout(pollChat, 2000);
 }
 
 /**
