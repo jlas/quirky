@@ -73,8 +73,9 @@ var PIECECLS = '.piece';
 var SNAPGRIDCLS = '.snapgrid';
 
 // Define timeoutIDs for Ajax calls
-var GETPLAYERSTID = null;
 var DRAWCHATTID = null;
+var GETGAMESTID = null;
+var GETPLAYERSTID = null;
 
 /**
  * Process player data.
@@ -370,6 +371,7 @@ function drawGameList(games) {
         var node = $("<td>"+name+"</td>")[0];
         node.onclick = function () {
             $.cookie('game', name);
+            clearTimeout(GETGAMESTID);
             location.reload();
         };
         $(GAMES).append("<tr>"+
@@ -394,6 +396,13 @@ function drawLobby(games) {
     $(LOBBYLEFT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     drawGameList(games);
+
+    // setup future calls to get game list
+    function pollGames() {
+        $.getJSON("/games", drawGameList);
+        GETGAMESTID = setTimeout(pollGames, 2000);
+    }
+    GETGAMESTID = setTimeout(pollGames, 2000);
 }
 
 /**
@@ -416,7 +425,6 @@ function drawGame() {
         getPlayers();
         GETPLAYERSTID = setTimeout(pollPlayers, 2000);
     }
-
     GETPLAYERSTID = setTimeout(pollPlayers, 2000);
 }
 
