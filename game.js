@@ -34,7 +34,8 @@ var static_files = {
     'jquery.min.js': fs.readFileSync('jquery/jquery.min.js'),
     'jquery-ui.min.js': fs.readFileSync('jquery/jquery-ui.min.js'),
     'jquery.cookie.js': fs.readFileSync('jquery/jquery.cookie.js'),
-    'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png")
+    'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png"),
+    'wood.png': fs.readFileSync("media/dark_wood.png")
 }
 
 var CHATLINES = 1000;  // number of lines to store from chats

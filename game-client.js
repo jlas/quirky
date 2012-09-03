@@ -205,7 +205,7 @@ function onPieceDrop(event, ui) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             $(ERRORS).empty();
-            $(ERRORS).append("<div class='error'>"+jqXHR.responseText+"</div>");
+            $(ERRORS).append("<div class='error'>&#9888; "+jqXHR.responseText+"</div>");
         },
         complete: function() {
             $.getJSON("/games/"+$.cookie("game")+"/players", drawTurnInfo);
@@ -368,7 +368,7 @@ function drawGameList(games) {
         if (!games.hasOwnProperty(i))
             continue;
         var name = games[i]['name'];
-        var node = $("<td>"+name+"</td>")[0];
+        var node = $("<td class='game_link'>"+name+"</td>")[0];
         node.onclick = function () {
             $.cookie('game', name);
             clearTimeout(GETGAMESTID);
@@ -390,12 +390,27 @@ function drawGameList(games) {
 }
 
 /**
+ * Draw the logo
+ */
+function drawLogo() {
+    var i=0;
+    var logo = ["Q", "u", "i", "r", "k", "y"].map(function(x) {
+        var color = Object.keys(pastels)[i];
+        i += 1;
+        return ("<span style='color: " +
+                pastels[color] + ";'>" + x + "</span>");
+    });
+    $('.logo').html(logo.join(''));
+}
+
+/**
  * Draw the lobby.
  */
 function drawLobby(games) {
     $(LOBBYLEFT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     drawGameList(games);
+    drawLogo();
 
     // setup future calls to get game list
     function pollGames() {
