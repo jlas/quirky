@@ -20,52 +20,47 @@
   -->
 
 <html>
+  <head>
+    <title>Quirky</title>
+    <script src="jquery.min.js" type="text/javascript"></script>
+    <script src="jquery-ui.min.js" type="text/javascript" ></script>
+    <script src="jquery.cookie.js" type="text/javascript"></script>
+    <script src="game-client.js" type="text/javascript"></script>
+    <link href="game-style.css" rel="stylesheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans|Chango' rel='stylesheet' type='text/css'>
+  </head>
   <body>
-
-    <head>
-      <title>Quirky</title>
-      <script src="jquery.min.js" type="text/javascript"></script>
-      <script src="jquery-ui.min.js" type="text/javascript" ></script>
-      <script src="jquery.cookie.js" type="text/javascript"></script>
-      <script src="game-client.js" type="text/javascript"></script>
-      <link href="game-style.css" rel="stylesheet" type="text/css" />
-    </head>
 
     <!-- Lobby -->
     <div id="lobby">
-      <div id="lobby_head_panel" class="panel">
-        <div class="logo">Quirky</div>
-      </div>
-      <div id="lobby_left">
-      </div>
+      <div class="logo">Quirky</div>
+      <div id="lobby_chat"></div>
       <div id="lobby_game_panel" class="panel">
-        <table>
-          <thead>
-            <th>Game Room</th>
-            <th>Players</th>
-            <th></th>
-          </thead>
-          <tbody id="games"></tbody>
-        </table>
-        <div id="add_game">
-          <input type="text" />
-          <button>Create Game Room</button>
+        <div id="no_games" style="display: none">
+          <p>No games yet :(</p>
+          <p>Make one!</p>
         </div>
+        <div id="add_game">
+          <input type="text" class="text" />
+          <button>Create Game</button>
+        </div>
+        <hr/>
+        <div id="games"><table id="games_tbl"></table></div>
       </div>
     </div>
 
     <!-- Chat -->
 
-    <div id="chat_panel" class="panel" style="display: none;">
-      <div id="chat_log" class="chat"></div>
+    <div id="chat_panel" style="display: none;">
       <div id="add_guest" style="display: none">
-        Your name: <input type="text" />
+        Your name: <input type="text" class="text" />
         <button>Ok</button>
       </div>
       <div id="chat_input" style="display: none">
-        <input type="text" />
+        <input type="text" class="text" />
         <button>Chat</button>
       </div>
+      <div id="chat_log" class="text"></div>
     </div>
 
     <!-- Game Room -->

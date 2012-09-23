@@ -54,14 +54,16 @@ var ADDPLAYER = '#add_player';
 var BOARD = '#board';
 var CHATIN = '#chat_input';
 var CHATLOG = '#chat_log';
+var CHATPNL = '#chat_panel';
 var ERRORS = '#errors';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
-var GAMES = '#games';
+var GAMES = '#games_tbl';
+var GAMESHR = '#lobby_game_panel>hr';
 var LEAVEGAME = '#leave_game';
 var LOBBY = '#lobby';
-var LOBBYLEFT = '#lobby_left';
-var CHATPNL = '#chat_panel';
+var LOBBYCHAT = '#lobby_chat';
+var NOGAMESMSG = '#no_games';
 var PIECES = '#pieces';
 var PLAYERS = '#players';
 var PLAYERTBL = '#player_table';
@@ -364,6 +366,7 @@ var drawChatLog = function() {
  */
 function drawGameList(games) {
     $(GAMES).empty()
+    var thead = "<th>Game Room</th><th>Players</th><th></th>";
     for (var i in games) {
         if (!games.hasOwnProperty(i))
             continue;
@@ -378,12 +381,26 @@ function drawGameList(games) {
                         "<td>"+Object.keys(games[i]['players']).length+"</td>"+
                         "<td></td>"+
                         "</tr>");
-        $(GAMES+">tr:last-child").prepend(node);
+        $(GAMES+">tbody>tr:last-child").prepend(node);
     }
+
+    if (!$(GAMES+">*").length) {
+        $(NOGAMESMSG).show();
+        $(GAMESHR).hide();
+    } else {
+        $(GAMESHR).show();
+        $(GAMES).prepend(thead);
+    }
+
     $(ADDGAME+"> button")[0].onclick = function() {
         var name = $(ADDGAME+"> input")[0].value;
         $.post('/games', {name: name}, function() {
             $(ADDGAME+"> input").val('');  // post was succesful, so clear input
+            if (!$(GAMES+">*").length) {  // add thead if this is the first one
+                $(NOGAMESMSG).hide();
+                $(GAMES).prepend(thead);
+                $(GAMESHR).show();
+            }
             $(GAMES).append("<tr><td>"+name+"</td><td>0</td><td></td></tr>");
         });
     }
@@ -393,21 +410,22 @@ function drawGameList(games) {
  * Draw the logo
  */
 function drawLogo() {
-    var i=0;
-    var logo = ["Q", "u", "i", "r", "k", "y"].map(function(x) {
-        var color = Object.keys(pastels)[i];
-        i += 1;
-        return ("<span style='color: " +
-                pastels[color] + ";'>" + x + "</span>");
-    });
-    $('.logo').html(logo.join(''));
+    // var i=0;
+    // var logo = ["Q", "u", "i", "r", "k", "y"].map(function(x) {
+    //     var color = Object.keys(pastels)[i];
+    //     i += 1;
+    //     return ("<span style='color: " +
+    //             pastels[color] + ";'>" + x + "</span>");
+    // });
+    // $('.logo').html(logo.join(''));
+    $('.logo').html("Quirky");
 }
 
 /**
  * Draw the lobby.
  */
 function drawLobby(games) {
-    $(LOBBYLEFT).append($(CHATPNL)[0]);
+    $(LOBBYCHAT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     drawGameList(games);
     drawLogo();

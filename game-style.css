@@ -17,7 +17,38 @@
 
 body {
     background-image: url("light_noise_diagonal.png");
-    font-family: "Helvetica", "Open Sans", sans-serif;
+    font-family: "Open Sans", sans-serif;
+    margin: 8px;
+}
+
+button {
+    border: 1px solid black;
+    background: #dfdfdf;
+    background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#dfdfdf));
+    background: -webkit-linear-gradient(top, #efefef, #dfdfdf);
+    background: -moz-linear-gradient(top, #efefef, #dfdfdf);
+    background: -ms-linear-gradient(top, #efefef, #dfdfdf);
+    background: -o-linear-gradient(top, #efefef, #dfdfdf);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+    color: black;
+    padding: 0 10px;
+    height: 1.8em;
+    vertical-align: top;
+}
+button:hover {
+    background: #efefef;
+}
+button:active {
+    background: #dfdfdf;
+}
+
+input {
+    padding: 0 0;
+    height: 1.2em;
+    font-size: 1.2em;
 }
 
 .bold {
@@ -25,9 +56,12 @@ body {
 }
 
 .logo {
+    font-family: 'Chango', cursive;
     font-weight: bold;
     text-align: center;
     font-size: 3em;
+    color: #4E5C7D;
+    margin: 0 0 1% 0;
 }
 
 .error {
@@ -101,15 +135,12 @@ body {
 
 .panel {
     color: white;
-    border: solid 466B74;
-    border-radius: 1em;
     padding: 1em;
-    background-color: 678187;
-    box-shadow: 5px 5px 5px black;
+    background-color: #A3B0B3;
 }
 
 .panel hr {
-    float: left;
+    clear: both;
     width: 100%;
 }
 
@@ -135,42 +166,47 @@ body {
 
 /* lobby */
 
-#lobby_left {
-    float: left;
-    width: 60%;
+#lobby_chat {
+    float: right;
+    width: 63%;
     height: 80%;
-    margin: 1% 1% 1% 0%;
+    padding: 1em;
 }
 
 #lobby_game_panel {
-    float: right;
+    float: left;
     width: 30%;
     height: 80%;
-    margin: 1% 1% 1% 0%;
 }
 
-#lobby_head_panel {
-    height: 7%;
-    width: 96%;
-    float: left;
-    margin: 0% 0% 0% 0%;
+#add_game > input {
+    max-width: 60%;
+}
+
+#games {
+    max-height: 90%;
+    overflow: auto;
+}
+
+#games_tbl {
+    width: 100%;
+}
+
+#no_games {
+    color: #4E5C7D;
+    font-size: 2em;
+    text-align: center;
 }
 
 .lobby_chat_panel {
     height: 100%;
     width: 100%;
     float: left;
-    margin: 0% 0% 0% 0%;
-}
-
-#lobby_game_panel > table{
-    width: 100%;
 }
 
 .game_link {
-    color: #FFFB8C;
+    color: #4E5C7D;
     font-weight: bold;
-    text-decoration: underline;
 }
 
 .game_link:hover {
@@ -180,12 +216,16 @@ body {
 
 /* chat */
 
-.chat {
-    background: white;
+.text {
+    background: F6F7FA;
     color: black;
-    width: 98%;
-    height: 88%;
-    overflow: auto;
+    border: 1px #A3B0B3 solid;
+}
+
+#chat_log {
+   width: 98%;
+   height: 90%;
+   overflow: auto;
 }
 
 .mymsg {
@@ -196,14 +236,12 @@ body {
     color: blue;
 }
 
-#chat_input, #add_guest {
-    margin: 1% 0% 0% 0%;
-}
-
 #chat_input input {
     width: 85%;
+    margin: 0 0 1%;
 }
 
 #add_guest input {
     width: 50%
+    margin: 0 0 1%;
 }
