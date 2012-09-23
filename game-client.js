@@ -49,6 +49,7 @@ var finger = "&#9755;";
 // Define DOM element IDs
 var ADDGAME = '#add_game';
 var ADDGUEST = '#add_guest';
+var ADDGUESTFRM = '#add_guest_form';
 var ADDPIECE = '#add_piece';
 var ADDPLAYER = '#add_player';
 var BOARD = '#board';
@@ -301,7 +302,7 @@ function getBoard() {
  */
 function drawChatIn() {
     $(CHATIN).show();
-    $(CHATIN+"> button")[0].onclick = function() {
+    function submit() {
         var my_player = $.cookie("player");
         var game = $.cookie("game");
         if (game)
@@ -316,6 +317,13 @@ function drawChatIn() {
             drawChatLog();
         });
     }
+    $(CHATIN+"> button").click(submit);
+    $(CHATIN+"> input:visible").focus();
+    $(CHATIN+"> input").keydown(function(event) {
+        if (event.keyCode === 13) {
+            submit();
+        }
+    });
 }
 
 /**
@@ -325,12 +333,18 @@ function drawChatIn() {
  */
 function drawAddGuest() {
     $(ADDGUEST).show();
-    $(ADDGUEST+"> button")[0].onclick = function() {
-        var name =  $(ADDGUEST+"> input")[0].value;
+    function submit() {
+        var name =  $(ADDGUESTFRM+"> input")[0].value;
         $.cookie("player", name);
-        $(ADDGUEST).hide();
-        drawChatIn();
+        main();
     };
+    $(ADDGUESTFRM+"> button").click(submit);
+    $(ADDGUESTFRM+"> input:visible").focus();
+    $(ADDGUESTFRM+"> input").keydown(function(event) {
+        if (event.keyCode === 13) {
+            submit();
+        }
+    });
 }
 
 /**
@@ -392,7 +406,7 @@ function drawGameList(games) {
         $(GAMES).prepend(thead);
     }
 
-    $(ADDGAME+"> button")[0].onclick = function() {
+    function submit() {
         var name = $(ADDGAME+"> input")[0].value;
         $.post('/games', {name: name}, function() {
             $(ADDGAME+"> input").val('');  // post was succesful, so clear input
@@ -404,6 +418,14 @@ function drawGameList(games) {
             $(GAMES).append("<tr><td>"+name+"</td><td>0</td><td></td></tr>");
         });
     }
+
+    // TODO: figure out why jquery click and keydown functions screw this up?
+    $(ADDGAME+"> button")[0].onclick = submit;
+    $(ADDGAME+"> input")[0].onkeydown = function(event) {
+        if (event.keyCode === 13) {
+            submit();
+        }
+    };
 }
 
 /**
@@ -462,11 +484,18 @@ function drawGame() {
 }
 
 /**
- * Display the lobby or a game room for the user.
+ * Display the lobby, a game room, or the add guest for the user.
  */
 function gameOrLobby(games) {
     $(LOBBY).hide();
     $(GAMEROOM).hide();
+    $(ADDGUEST).hide();
+
+    if (!$.cookie("player")) {
+        drawAddGuest();
+        return;
+    }
+
     var my_game = $.cookie("game");
     // User is not in a valid game
     if (typeof games[my_game] === 'undefined') {
@@ -479,11 +508,7 @@ function gameOrLobby(games) {
     }
     $(CHATPNL).show();
     drawChatLog();
-    if (!$.cookie("player")) {
-        drawAddGuest();
-    } else {
-        drawChatIn();
-    }
+    drawChatIn();
 
     // setup future calls to get chat
     function pollChat() {
@@ -498,6 +523,10 @@ function gameOrLobby(games) {
  * - If the user has a game cookie, look up and put him in the game.
  * - Otherwise, put him in the lobby.
  */
-$(function() {
+function main() {
     $.getJSON("/games", gameOrLobby);
+}
+
+$(function() {
+    main();
 });

@@ -241,7 +241,18 @@ input {
     margin: 0 0 1%;
 }
 
-#add_guest input {
-    width: 50%
-    margin: 0 0 1%;
+#add_guest_form {
+    vertical-align: middle;
+    text-align: center;
+    margin: 10% 0 0 0;
+    font-size: 2em;
+}
+
+#add_guest_form > input {
+    width: 30%;
+}
+
+#add_guest_form > button {
+    padding: 0 20px;
+    height: 3.4em;
 }
