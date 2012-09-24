@@ -68,6 +68,7 @@ var NOGAMESMSG = '#no_games';
 var PIECES = '#pieces';
 var PLAYERS = '#players';
 var PLAYERTBL = '#player_table';
+var SIDEBOARD = '#sideboard';
 var TURN = '#turn';
 
 // Define DOM class names
@@ -289,8 +290,14 @@ function getBoard() {
 
             $(SNAPGRIDCLS).droppable({
                 accept: PIECECLS,
-                activate: function (event, ui) { $(SNAPGRIDCLS).html("&middot;"); },
-                deactivate: function (event, ui) { $(SNAPGRIDCLS).html(""); },
+                activate: function (event, ui) {
+                    $(SNAPGRIDCLS).html("&middot;");
+                    $(BOARD).addClass("activate");
+                },
+                deactivate: function (event, ui) {
+                    $(SNAPGRIDCLS).html("");
+                    $(BOARD).removeClass("activate");
+                },
                 drop: onPieceDrop,
             });
         })
@@ -366,9 +373,9 @@ var drawChatLog = function() {
             for (var i=0; i<data.length; i++) {
                 var name = data[i]['name'];
                 var msgcls = (name == my_player) ? "mymsg": "othermsg";
-                $(CHATLOG).append('<div><span class="'+msgcls+'">'+
-                                  data[i]['name']+'</span>: '+
-                                  data[i]['input']+'</div>');
+                $(CHATLOG).prepend('<div><span class="'+msgcls+'">'+
+                                   data[i]['name']+'</span>: '+
+                                   data[i]['input']+'</div>');
             }
             lastids[uri] = data[i-1] ? data[i-1]['id']: undefined;
         });
@@ -467,7 +474,8 @@ function drawGame() {
     getPlayers();
     getBoard();
     getPiecesLeft();
-    $(GAMEROOM).append($(CHATPNL)[0]);
+    $(SIDEBOARD).append("<hr/>");
+    $(SIDEBOARD).append($(CHATPNL));
     $(CHATPNL).addClass('game_chat_panel');
     $(LEAVEGAME)[0].onclick = function () {
         $.removeCookie('game');

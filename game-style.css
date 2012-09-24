@@ -64,6 +64,11 @@ input {
     margin: 0 0 1% 0;
 }
 
+#errors {
+    clear: both;
+    padding: 2% 0 0 0;
+}
+
 .error {
     clear: both;
     text-align: center;
@@ -100,34 +105,34 @@ input {
 .snapgrid {}
 
 #board {
-    height: 400px;
-    width: 400px;
+    height: 450px;
+    width: 450px;
     overflow: auto;
-    border: solid 1px;
+    border: 1px #A3B0B3 solid;
+    background: F6F7FA;
+}
+
+.activate#board {
+    border: 2px #FFAF5A solid;
 }
 
 #game_room_main {
     float: left;
-    height: 100%;
     width: 50%;
-    margin: 1% 0% 1% 1%
+    margin: 0 0 0 1%
 }
 
 #sideboard {
     float: left;
-    margin: 1% 1% 1% 1%;
     width: 40%;
 }
 
 .game_chat_panel {
-    float: left;
-    margin: 1% 1% 1% 1%;
-    width: 40%;
-    height: 35%;
+    clear: both;
 }
 
 #pieces {
-    float: left;
+    clear: both;
     width: 100%;
 }
 
@@ -170,7 +175,6 @@ input {
     float: right;
     width: 63%;
     height: 80%;
-    padding: 1em;
 }
 
 #lobby_game_panel {
@@ -180,7 +184,7 @@ input {
 }
 
 #add_game > input {
-    max-width: 60%;
+    max-width: 55%;
 }
 
 #games {
@@ -202,6 +206,7 @@ input {
     height: 100%;
     width: 100%;
     float: left;
+    margin: 2% 0 0 0;
 }
 
 .game_link {
@@ -228,6 +233,12 @@ input {
    overflow: auto;
 }
 
+.game_chat_panel > #chat_log {
+   height: 30%;
+   overflow: auto;
+}
+
+
 .mymsg {
     color: red;
 }
@@ -237,7 +248,7 @@ input {
 }
 
 #chat_input input {
-    width: 85%;
+    width: 80%;
     margin: 0 0 1%;
 }
 

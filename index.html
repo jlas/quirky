@@ -74,25 +74,16 @@
 
     <div id="game_room" style="display: none">
 
-      <div id="game_room_main">
-        <div class="panel">
-          <button id="leave_game">&#8678 Leave Room</button>
-        </div>
-        <p>Board:</p>
-        <div id="board"></div>
-      </div>
-
       <div id="sideboard" class="panel">
-
+        <p><button id="leave_game">&#8678 Leave Room</button></p>
         <div id="turn"></div>
-
         <p>Pieces Left:
           <span id="game_pieces"></span>
         </p>
 
         <p>My Pieces:</p>
         <div id="pieces"></div>
-
+        <div id="errors"></div>
         <div id="player_table">
           <hr />
           <table>
@@ -104,15 +95,13 @@
             <tbody id="players"></tbody>
           </table>
         </div>
-
-        <div id="add_player" style="display: none; float: left">
-          Name: <input type="text" />
-          <button>Add Player</button>
-        </div>
-
-        <div id="errors"></div>
-
       </div>
+
+      <div id="game_room_main">
+        <p>Board:</p>
+        <div id="board"></div>
+      </div>
+
     </div>
 
   </body>
