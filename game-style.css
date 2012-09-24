@@ -107,7 +107,6 @@ input {
 #board {
     height: 450px;
     width: 450px;
-    overflow: auto;
     border: 1px #A3B0B3 solid;
     background: F6F7FA;
 }
