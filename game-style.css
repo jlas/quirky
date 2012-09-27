@@ -21,6 +21,16 @@ body {
     margin: 8px;
 }
 
+a {
+    color: #4E5C7D;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #FFAF5A;
+}
+
 button {
     border: 1px solid black;
     background: #dfdfdf;
@@ -38,18 +48,37 @@ button {
     height: 1.8em;
     vertical-align: top;
 }
-button:hover {
-    background: #efefef;
-}
-button:active {
-    background: #dfdfdf;
-}
+button:hover { background: #efefef; }
+button:active { background: #dfdfdf; }
 
 input {
     padding: 0 0;
     height: 1.2em;
     font-size: 1.2em;
 }
+
+#howtobttn {
+    position: absolute;
+    right: 2em;
+    top: 1.8em;
+    border: 2px dotted #4E5C7D;
+    font-size: 1.2em;
+    color: #4e5c7d;
+    vertical-align: top;
+    background: #ff9933;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffaf5a), to(#ff9933));
+    background: -webkit-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -moz-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -ms-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -o-linear-gradient(top, #ffaf5a, #ff9933);
+    padding: 0 10px;
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+    border-radius: 40px;
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+}
+#howtobttn:hover { background: #ffaf5a; }
+#howtobttn:active { background: #ff9933; }
 
 .bold {
     font-weight: bold;
@@ -59,7 +88,7 @@ input {
     font-family: 'Chango', cursive;
     font-weight: bold;
     text-align: center;
-    font-size: 3em;
+    font-size: 4em;
     color: #4E5C7D;
     margin: 0 0 1% 0;
 }
@@ -206,16 +235,6 @@ input {
     width: 100%;
     float: left;
     margin: 2% 0 0 0;
-}
-
-.game_link {
-    color: #4E5C7D;
-    font-weight: bold;
-}
-
-.game_link:hover {
-    cursor: pointer;
-    color: #FFAF5A;
 }
 
 /* chat */

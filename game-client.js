@@ -61,6 +61,7 @@ var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
 var GAMES = '#games_tbl';
 var GAMESHR = '#lobby_game_panel>hr';
+var HOWTO = "#howto";
 var LEAVEGAME = '#leave_game';
 var LOBBY = '#lobby';
 var LOBBYCHAT = '#lobby_chat';
@@ -305,6 +306,14 @@ function getBoard() {
 }
 
 /**
+ * Draw the game play instructions.
+ */
+function drawHowTo() {
+    $(LOBBY).hide();
+    $(HOWTO).show();
+}
+
+/**
  * Draw the chat input.
  */
 function drawChatIn() {
@@ -392,7 +401,7 @@ function drawGameList(games) {
         if (!games.hasOwnProperty(i))
             continue;
         var name = games[i]['name'];
-        var node = $("<td class='game_link'>"+name+"</td>")[0];
+        var node = $("<td><a href='#game_room'>"+name+"</a></td>")[0];
         node.onclick = function () {
             $.cookie('game', name);
             clearTimeout(GETGAMESTID);

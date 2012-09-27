@@ -34,6 +34,7 @@
     <!-- Lobby -->
     <div id="lobby">
       <div class="logo">Quirky</div>
+      <button id="howtobttn" onclick="drawHowTo();">How to play</button>
       <div id="lobby_chat"></div>
       <div id="lobby_game_panel" class="panel">
         <div id="no_games" style="display: none">
@@ -53,7 +54,14 @@
 
     <div id="add_guest" style="display: none">
       <div class="logo">Quirky</div>
+      <a href="https://github.com/jlas/quirky">
+        <img style="position: absolute; top: 0; right: 0; border: 0;"
+             src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"
+             alt="Fork me on GitHub">
+      </a>
       <div id="add_guest_form">
+        <p>is an open source clone of the
+          <a href="http://www.google.com/search?q=qwirkle">Qwirkle</a> board game.</p>
         <p>What would you like to be called?</p>
         <input type="text" class="text" />
         <button>Ok</button>
@@ -102,6 +110,44 @@
         <div id="board"></div>
       </div>
 
+    </div>
+
+    <!-- How to play -->
+
+    <div id="howto" style="display:none">
+      <a href="">&#8678; Back to Lobby</a>
+      <h1>How to play Quirky</h1>
+      <p>The goal of Quirky is to form lines (rows & columns) of blocks such that:
+        <ul>
+          <li>The line shares either a common shape <em>or</em> color.</li>
+          <li>No block is duplicated within the line.</li>
+        </ul>
+      </p>
+      <h2>Scoring</h2>
+      <ul>
+        <li>1 point for each block placed.</li>
+        <li>When adding to an existing line 1 point is scored for each existing
+          block in that line.</li>
+        <li>6 bonus points is scored when a line is "completed". This means that
+          the line has 6 blocks of all the same color or shape.</li>
+        <li>Once all blocks have been played the player with the highest score
+          wins.</li>
+      </ul>
+      <h2>Turn Steps</h2>
+      <ul>
+        <li>Either: play then draw:</li>
+        <ul>
+          <li>Add blocks to the board. Blocks can only be added to a single line
+            per turn, at either side.</li>
+          <li>Draw more blocks until you have 6.</li>
+        </ul>
+        <li><em>or</em>, trade:</li>
+        <ul>
+          <li>Trade in any number of blocks. If you are unable to play any
+            blocks this turn, this is your only option.</li>
+        </ul>
+      </ul>
+      <a href="">&#8678; Back to Lobby</a>
     </div>
 
   </body>
