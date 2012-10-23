@@ -1,26 +1,7 @@
-<!--
-    This file is part of Quirky.
-
-    Quirky is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Quirky is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Quirky.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<!--
-    @author juan.lasheras@gmail.com (Juan Lasheras)
-  -->
-
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Quirky</title>
     <script src="jquery.min.js" type="text/javascript"></script>
     <script src="jquery-ui.min.js" type="text/javascript" ></script>
@@ -29,6 +10,28 @@
     <link href="game-style.css" rel="stylesheet" type="text/css" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans|Chango' rel='stylesheet' type='text/css'>
   </head>
+
+  <!--
+      This file is part of Quirky.
+
+      Quirky is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+
+      Quirky is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+      along with Quirky.  If not, see <http://www.gnu.org/licenses/>.
+    -->
+
+  <!--
+      @author juan.lasheras@gmail.com (Juan Lasheras)
+    -->
+
   <body>
 
     <!-- Lobby -->
@@ -83,7 +86,7 @@
     <div id="game_room" style="display: none">
 
       <div id="sideboard" class="panel">
-        <p><button id="leave_game">&#8678 Leave Room</button></p>
+        <p><button id="leave_game">&#8678; Leave Room</button></p>
         <div id="turn"></div>
         <p>Pieces Left:
           <span id="game_pieces"></span>
@@ -96,9 +99,11 @@
           <hr />
           <table>
             <thead>
-              <th class='pturn'></th>
-              <th class='pdata'>Player</th>
-              <th class='pdata'>Score</th>
+              <tr>
+                <th class='pturn'></th>
+                <th class='pdata'>Player</th>
+                <th class='pdata'>Score</th>
+              </tr>
             </thead>
             <tbody id="players"></tbody>
           </table>
@@ -117,12 +122,11 @@
     <div id="howto" style="display:none">
       <a href="">&#8678; Back to Lobby</a>
       <h1>How to play Quirky</h1>
-      <p>The goal of Quirky is to form lines (rows & columns) of blocks such that:
-        <ul>
-          <li>The line shares either a common shape <em>or</em> color.</li>
-          <li>No block is duplicated within the line.</li>
-        </ul>
-      </p>
+      <p>The goal of Quirky is to form lines (rows & columns) of blocks such that:</p>
+      <ul>
+        <li>The line shares either a common shape <em>or</em> color.</li>
+        <li>No block is duplicated within the line.</li>
+      </ul>
       <h2>Scoring</h2>
       <ul>
         <li>1 point for each block placed.</li>
@@ -135,17 +139,19 @@
       </ul>
       <h2>Turn Steps</h2>
       <ul>
-        <li>Either: play then draw:</li>
-        <ul>
-          <li>Add blocks to the board. Blocks can only be added to a single line
-            per turn, at either side.</li>
-          <li>Draw more blocks until you have 6.</li>
-        </ul>
-        <li><em>or</em>, trade:</li>
-        <ul>
-          <li>Trade in any number of blocks. If you are unable to play any
-            blocks this turn, this is your only option.</li>
-        </ul>
+        <li>Either: play then draw:
+          <ul>
+            <li>Add blocks to the board. Blocks can only be added to a single line
+              per turn, at either side.</li>
+            <li>Draw more blocks until you have 6.</li>
+          </ul>
+        </li>
+        <li><em>or</em>, trade:
+          <ul>
+            <li>Trade in any number of blocks. If you are unable to play any
+              blocks this turn, this is your only option.</li>
+          </ul>
+        </li>
       </ul>
       <a href="">&#8678; Back to Lobby</a>
     </div>
