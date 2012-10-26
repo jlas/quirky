@@ -1,0 +1,78 @@
+/*
+  This file is part of Quirky.
+
+  Quirky is free software under the terms of the GNU General Public License
+  version 3, see <http://www.gnu.org/licenses/>.
+*/
+
+body { background-image: url("light_noise_diagonal.png"); }
+a { color: #4E5C7D; }
+a:hover { color: #FFAF5A; }
+
+button {
+    border: 1px solid black;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background: #dfdfdf;
+    background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#dfdfdf));
+    background: -webkit-linear-gradient(top, #efefef, #dfdfdf);
+    background: -moz-linear-gradient(top, #efefef, #dfdfdf);
+    background: -ms-linear-gradient(top, #efefef, #dfdfdf);
+    background: -o-linear-gradient(top, #efefef, #dfdfdf);
+    color: black;
+}
+button:hover { background: #efefef; }
+button:active { background: #dfdfdf; }
+
+#howtobttn {
+    border: 2px dotted #4E5C7D;
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+    border-radius: 40px;
+    color: #4e5c7d;
+    background: #ff9933;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffaf5a), to(#ff9933));
+    background: -webkit-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -moz-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -ms-linear-gradient(top, #ffaf5a, #ff9933);
+    background: -o-linear-gradient(top, #ffaf5a, #ff9933);
+}
+#howtobttn:hover { background: #ffaf5a; }
+#howtobttn:active { background: #ff9933; }
+
+.logo { color: #4E5C7D; }
+
+.error {
+    border: red 1px solid;
+    background: lightgray;
+    color: red;
+}
+
+.boardpiece { background: url("wood.png"); }
+.piece { background: url("wood.png"); }
+
+#board {
+    border: 1px #A3B0B3 solid;
+    background: #F6F7FA;
+}
+
+.activate#board { border: 2px #FFAF5A solid; }
+
+.panel {
+    color: white;
+    background-color: #A3B0B3;
+}
+
+.panel table { color: white; }
+
+#no_games { color: #4E5C7D; }
+
+.text {
+    background: #F6F7FA;
+    color: black;
+    border: 1px #A3B0B3 solid;
+}
+
+.mymsg { color: red; }
+.othermsg { color: blue; }

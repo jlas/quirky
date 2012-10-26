@@ -30,7 +30,10 @@ cookies = require('./node_modules/cookies');
 var static_files = {
     'index': fs.readFileSync('index.html'),
     'game-client.js': fs.readFileSync('game-client.js'),
-    'game-style.css': fs.readFileSync('game-style.css'),
+    'layout.css': fs.readFileSync('layout.css'),
+    'color.css': fs.readFileSync('color.css'),
+    'typography.css': fs.readFileSync('typography.css'),
+    'normalize.css': fs.readFileSync('normalize.css'),
     'jquery.min.js': fs.readFileSync('jquery/jquery.min.js'),
     'jquery-ui.min.js': fs.readFileSync('jquery/jquery-ui.min.js'),
     'jquery.cookie.js': fs.readFileSync('jquery/jquery.cookie.js'),

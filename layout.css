@@ -1,0 +1,188 @@
+/*
+  This file is part of Quirky.
+
+  Quirky is free software under the terms of the GNU General Public License
+  version 3, see <http://www.gnu.org/licenses/>.
+*/
+
+@import url(normalize.css);
+@import url(color.css);
+@import url(typography.css);
+
+body { height: 740px; width: 1000px; margin: auto; }
+
+button {
+    vertical-align: top;
+    padding: 0;
+    box-sizing: content-box;
+}
+
+input {
+    padding: 0 0;
+    height: 5%;
+}
+
+#howtobttn {
+    position: absolute;
+    right: 2em;
+    top: 1.8em;
+    vertical-align: top;
+    padding: 0 10px;
+}
+
+.logo { height: 15%; }
+
+#errors {
+    clear: both;
+    padding: 2% 0 0 0;
+}
+
+.error { clear: both; }
+
+/* main board */
+
+#game_room {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+#sideboard {
+    position: absolute;
+    left: 0;
+    width: 36%;
+    height: 98%;
+    padding: 1%;
+}
+
+#game_room_main {
+    position: absolute;
+    left: 38%;
+    width: 60%;
+    height: 98%;
+    padding: 1%;
+}
+
+#board {
+    height: 100%;
+    width: 100%;
+}
+
+#pieces { clear: both; width: 100%; }
+.boardpiece { float: left; }
+.piece { float: left; z-index: 1;}
+.grid { float: left; }
+.snapgrid { }
+
+/* panel */
+
+.panel {
+    color: white;
+    background-color: #A3B0B3;
+}
+
+/* player table */
+
+#player_table {
+    float: left;
+    width: 100%;
+}
+
+.pturn { width: 10% }
+.pdata { width: 40%; }
+
+/* lobby */
+
+#lobby {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#lobby_chat {
+    position: absolute;
+    left: 38%;
+    width: 60%;
+    height: 83%;
+    padding: 1%;
+}
+
+#lobby_game_panel {
+    position: absolute;
+    left: 0;
+    width: 36%;
+    height: 83%;
+    padding: 1%;
+}
+
+#add_game {
+    position: relative;
+    width: 100%;
+    height: 5%;
+}
+#add_game > input {
+    position: absolute;
+    height: 100%;
+    width: 68%;
+}
+#add_game > button {
+    position: absolute;
+    height: 100%;
+    left: 68%;
+    width: 31%;
+    margin: 0 0 0 1%;
+}
+
+#games {
+    max-height: 90%;
+    overflow: auto;
+}
+
+#games_tbl { width: 100%; }
+
+/* chat */
+
+#chat_panel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#chat_log {
+   width: 100%;
+   height: 94%;
+   overflow: auto;
+   position: absolute;
+   top: 6%;
+}
+
+#chat_input { width: 100%; height: 5%; }
+#chat_input input {
+    width: 80%;
+    position: absolute;
+}
+#chat_input button {
+    position: absolute;
+    left: 80%;
+    margin: 0 0 0 1%;
+    width: 19%;
+    height: 5%;
+}
+
+#chat_panel.game_chat_panel { height: 40%; }
+
+/* add guest */
+
+#add_guest_form {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 2em;
+    height: 80%;
+}
+
+#add_guest_form > input { width: 30%; }
+
+#add_guest_form > button {
+    padding: 0 20px;
+    height: 3.4em;
+}
