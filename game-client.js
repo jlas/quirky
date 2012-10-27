@@ -250,7 +250,8 @@ function getBoard() {
 
         $(GRIDCLS).css("width", (100/cols)+"%");
         $(GRIDCLS).css("height", (100/rows)+"%");
-        $(GRIDCLS).css("font-size", $(GRIDCLS).height());
+        $(GRIDCLS).css("font-size", Math.min($(GRIDCLS).height(),
+                                             $(GRIDCLS).width()));
 
         //$(BOARD).css("width", (($(GRIDCLS).width()) * 10))
         //$(BOARD).css("height", (($(GRIDCLS).height()) * 10))

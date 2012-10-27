@@ -12,9 +12,12 @@ a {
     text-decoration: none;
 }
 
-input { font-size: 1.2em; }
+input { font-size: 1.4em; }
 
-button { text-shadow: rgba(0,0,0,.4) 0 1px 0; }
+button {
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+    font-size: 1.4em;
+}
 
 #howtobttn {
     font-size: 1.2em;
@@ -56,3 +59,5 @@ button { text-shadow: rgba(0,0,0,.4) 0 1px 0; }
     font-size: 2em;
     text-align: center;
 }
+
+#add_guest_form { font-size: 2em; }
