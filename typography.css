@@ -19,6 +19,11 @@ button {
     font-size: 1.4em;
 }
 
+#add_guest_form {
+    text-align: center;
+    font-size: 2em;
+}
+
 #howtobttn {
     font-size: 1.2em;
     text-shadow: rgba(0,0,0,.4) 0 1px 0;

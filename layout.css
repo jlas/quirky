@@ -49,9 +49,10 @@ input {
 #sideboard {
     position: absolute;
     left: 0;
-    width: 36%;
-    height: 98%;
+    width: 34%;
+    height: 96%;
     padding: 1%;
+    margin: 1%;
 }
 
 #game_room_main {
@@ -174,7 +175,6 @@ input {
 
 #add_guest_form {
     vertical-align: middle;
-    text-align: center;
     height: 80%;
 }
 
