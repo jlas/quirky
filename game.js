@@ -435,6 +435,12 @@ function handleGames(request, response, path) {
     } else {
         // return info on a specifc game
         var game = games[path.shift()];
+        if (game === undefined) {
+            response.writeHead(404, {'Content-Type': 'text/json'});
+            response.write("No such game exists", 'utf-8');
+            response.end();
+            return;
+        }
         handleGame(request, response, game, path);
     }
 }
