@@ -40,6 +40,9 @@ var ushapes = {
     "clover": "&#9827;"
 };
 
+// How long to let each turn last for, in seconds
+var COUNTDOWNTIME = 300;  // 5 min
+
 // My Turn state
 var HAVETURN = null;
 
@@ -56,6 +59,7 @@ var BOARD = '#board';
 var CHATIN = '#chat_input';
 var CHATLOG = '#chat_log';
 var CHATPNL = '#chat_panel';
+var COUNTDOWN = '#countdown';
 var ERRORS = '#errors';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
@@ -81,6 +85,32 @@ var SNAPGRIDCLS = '.snapgrid';
 var DRAWCHATTID = null;
 var GETGAMESTID = null;
 var GETPLAYERSTID = null;
+var COUNTDOWNTID = null;
+
+/**
+ * Countdown timer. Update onscreen timer and end turn if time gets too low.
+ */
+function countdownTimer() {
+    $(COUNTDOWN).html("0m 0s");
+    var end_t = COUNTDOWNTIME;
+    var start_t = (new Date()).getTime()/1000;
+    function countdown() {
+        var cur_t = (new Date()).getTime()/1000;
+        var timeleft = (end_t - (cur_t - start_t));
+        if (timeleft >= 0) {
+            var min = Math.floor(timeleft / 60);
+            var sec = Math.floor(timeleft % 60);
+            $(COUNTDOWN).html(min + "m " + sec + "s");
+            COUNTDOWNTID = setTimeout(countdown, 1000);
+        } else {
+            $.post("/games/"+$.cookie("game")+"/players",
+                   {end_turn: true}, function() {
+                getPlayers();
+            });
+        }
+    }
+    countdown();
+}
 
 /**
  * Process player data.
@@ -120,6 +150,11 @@ function onGetPlayers(pdata) {
                    function() {getPlayers();});
         } else if (HAVETURN !== pdata[my_player].has_turn) {
             HAVETURN = pdata[my_player].has_turn;
+            if (HAVETURN) {
+                countdownTimer();
+            } else {
+                clearTimeout(COUNTDOWNTID);
+            }
             drawTurnInfo(pdata);
         }
     }
@@ -134,17 +169,18 @@ function drawTurnInfo(pdata) {
     var my_player = pdata[$.cookie("player")];
 
     $(PIECES).empty();
-    $(TURN).empty();
     $(ADDPIECE).show();
 
     // allow player to end his turn
     if (my_player["has_turn"]) {
-        $(TURN).append("It's your turn! <button>End my turn</button>");
+        $(TURN).show();
         $(TURN+"> button")[0].onclick = function() {
             $.post("/games/"+my_game+"/players", {end_turn: true}, function() {
                 getPlayers();
             });
         };
+    } else {
+        $(TURN).hide();
     }
     getMyPieces(my_player);
     getPiecesLeft();
@@ -247,6 +283,12 @@ function getBoard() {
                     "col", (j+left)).data("row", (top+i));
             }
         }
+
+        // if ($(BOARD).width() < $(BOARD).height()) {
+        //     $(BOARD).height($(BOARD).width());
+        // } else {
+        //     $(BOARD).width($(BOARD).height());
+        // }
 
         $(GRIDCLS).css("width", (100/cols)+"%");
         $(GRIDCLS).css("height", (100/rows)+"%");

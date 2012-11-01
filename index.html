@@ -87,7 +87,10 @@
 
       <div id="sideboard" class="panel">
         <p><button id="leave_game">&#8678; Leave Room</button></p>
-        <div id="turn"></div>
+        <div id="turn" style="display: none;">
+          <p>It's your turn! You have <span id="countdown">0m 0s</span> left.</p>
+          <button>End my turn</button>
+        </div>
         <p>Pieces Left:
           <span id="game_pieces"></span>
         </p>
