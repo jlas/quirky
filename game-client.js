@@ -67,6 +67,7 @@ var GAMES = '#games_tbl';
 var GAMESHR = '#lobby_game_panel>hr';
 var HOWTO = "#howto";
 var LEAVEGAME = '#leave_game';
+var LOADINGGAME = '#loading_game';
 var LOBBY = '#lobby';
 var LOBBYCHAT = '#lobby_chat';
 var NOGAMESMSG = '#no_games';
@@ -441,8 +442,9 @@ function drawGameList(games) {
     $(GAMES).empty()
     var thead = "<th>Game Room</th><th>Players</th><th></th>";
     for (var i in games) {
-        if (!games.hasOwnProperty(i))
+        if (!games.hasOwnProperty(i)) {
             continue;
+        }
         var name = games[i]['name'];
         var node = $("<td><a href='#game_room'>"+name+"</a></td>")[0];
         node.onclick = function () {
@@ -469,12 +471,30 @@ function drawGameList(games) {
         var name = $(ADDGAME+"> input")[0].value;
         $.post('/games', {name: name}, function() {
             $(ADDGAME+"> input").val('');  // post was succesful, so clear input
-            if (!$(GAMES+">*").length) {  // add thead if this is the first one
-                $(NOGAMESMSG).hide();
-                $(GAMES).prepend(thead);
-                $(GAMESHR).show();
+            $(LOBBY).hide();
+            $(LOADINGGAME).show();
+
+            var tries = 0;
+            function loadgame() {
+                $.getJSON("/games", function(games) {
+                    for (var i in games) {
+                        if (!games.hasOwnProperty(i)) {
+                            continue;
+                        }
+                        if (name === games[i]['name']) {
+                            // game is ready
+                            $.cookie('game', name);
+                            location.reload();
+                            return;
+                        }
+                    }
+                    if (++tries > 3) {
+                        return;
+                    };
+                });
+                setTimeout(loadgame, 1000);
             }
-            $(GAMES).append("<tr><td>"+name+"</td><td>0</td><td></td></tr>");
+            setTimeout(loadgame, 1000);
         });
     }
 

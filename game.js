@@ -59,9 +59,11 @@ function Game (name) {
 
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
     var shapes =  ['circle', 'star', 'diamond', 'square', 'triangle', 'clover'];
-    for (c in colors)
-        for (s in shapes)
+    for (c in colors) {
+        for (s in shapes) {
             this.pieces.push({'piece': new Piece(shapes[s], colors[c]), 'count': 3});
+        }
+    }
 }
 
 Game.prototype.toJSON = function() {
@@ -75,8 +77,9 @@ Game.prototype.drawPieces = function(num) {
         var r = Math.floor(Math.random() * this.pieces.length);
         var p = this.pieces[r]['piece'];
         draw.push(new Piece(p.shape, p.color));
-        if ((this.pieces[r]['count'] -= 1) < 1)
-            this.pieces.splice(r, 1)
+        if ((this.pieces[r]['count'] -= 1) < 1) {
+            this.pieces.splice(r, 1);
+        }
     }
     return draw;
 }
@@ -102,17 +105,19 @@ function GamePiece (piece, row, column) {
     this.column = column;
     this.equals = function(x) {
         return (this.column == x.column && this.row == x.row &&
-                this.piece.equals(x.piece))
+                this.piece.equals(x.piece));
     }
 }
 
 // typical response helper
 function respOk (response, data, type) {
-    if (type)
+    if (type) {
         headers = {'Content-Type': type};
+    }
     response.writeHead(200, headers);
-    if (data)
+    if (data) {
         response.write(data, 'utf-8');
+    }
     response.end();
 }
 
@@ -128,8 +133,9 @@ function addGamePiece(game, gamepiece) {
     var col = gamepiece.column;
     var points = 0;
 
-    if (typeof game.boardmat[row][col] !== "undefined")
+    if (game.boardmat[row][col] !== undefined) {
         return "GamePiece already exists.";
+    }
 
     /**
      * Helper function, to check whether it is valid to place a piece
@@ -140,10 +146,11 @@ function addGamePiece(game, gamepiece) {
     function _adjacentPieces(piece, getAdjacent) {
         for (var i=1; i<=6; i++) {
             adjacent = getAdjacent(i);
-            if (typeof adjacent === 'undefined')
+            if (typeof adjacent === 'undefined') {
                 return false;
-            else if (i == 6)  // can't have more than 6 pieces in a valid line
+            } else if (i == 6) { // can't have more than 6 pieces in a valid line
                 return adjacent;
+            }
 
             var samecolor = (adjacent.piece.color == piece.color);
             var sameshape = (adjacent.piece.shape == piece.shape);
@@ -155,9 +162,10 @@ function addGamePiece(game, gamepiece) {
             // either samecolor or sameshape, not both
             if ((samecolor || sameshape) && !(samecolor && sameshape)) {
                 // add a point for adjacent piece, if not been played this turn
-                if (!game.turn_pieces.some(function(x){
-                    return x.equals(adjacent);}))
+                if (!game.turn_pieces.some(function(x) {
+                    return x.equals(adjacent);})) {
                     points += 1;
+                }
                 continue;
             }
             return adjacent;
@@ -183,18 +191,21 @@ function addGamePiece(game, gamepiece) {
         var piece = game.boardmat[row][_col];
         return piece && new GamePiece(piece, row, _col)});
     var badPiece = false;
-    if (badPiece = (checkLeft || checkRight || checkUp || checkDown))
+    if (badPiece = (checkLeft || checkRight || checkUp || checkDown)) {
         return ("GamePiece adjacent to incompatible piece: " +
                 badPiece.piece.color + " " + badPiece.piece.shape);
+    }
 
     // check if piece played in same row or column as past pieces this turn}
     function sameRowOrCol(otherpiece) {
         return (otherpiece.row == row || otherpiece.column == col)
     }
-    if (game.turn_pieces)
-        if (!game.turn_pieces.every(sameRowOrCol))
+    if (game.turn_pieces) {
+        if (!game.turn_pieces.every(sameRowOrCol)) {
             return ("GamePiece must be in same row or column as others " +
                     "placed this turn.");
+        }
+    }
 
     game.turn_pieces.push(gamepiece);
     game.boardmat[row][col] = gamepiece.piece;
@@ -202,14 +213,16 @@ function addGamePiece(game, gamepiece) {
 
     // update board dimensions
     var dim = game.dimensions;
-    if (col < dim.left)
+    if (col < dim.left) {
         dim.left = col;
-    else if (col > dim.right)
+    } else if (col > dim.right) {
         dim.right = col;
-    if (row < dim.top)
+    }
+    if (row < dim.top) {
         dim.top = row;
-    else if (row > dim.bottom)
+    } else if (row > dim.bottom) {
         dim.bottom = row;
+    }
 
     // debug logging, print out boardmat
     // for (var i=dim.top; i<=dim.bottom; i++) {
@@ -268,6 +281,22 @@ function switchPlayers(game, player) {
 }
 
 /**
+ * Create and add a player to a game.
+ * @param game: {obj} game object
+ * @param playernm: {str} player name
+ */
+function addPlayerToGame(game, playernm) {
+    var p = new Player(playernm);
+    p.pieces = game.drawPieces(6);
+    game.players[p.name] = p;
+
+    // if first player, make it his turn
+    if (Object.keys(game.players).length == 1) {
+        p.has_turn = true;
+    }
+}
+
+/**
  * Handle a player resource transaction.
  * - POST to add player to the game.
  * - GET player pieces
@@ -279,7 +308,7 @@ function handlePlayers(request, response, game, path) {
 
         if (request.method == "POST") {
             var player = playerFromReq(request, response, game);
-            if (player)
+            if (player) {
                 // end turn
                 // TODO should this be under /players/<name>/?
                 var func = function (form) {
@@ -288,17 +317,11 @@ function handlePlayers(request, response, game, path) {
                         respOk(response);
                     }
                 }
-            else
+            } else {
                 // add player
                 var func = function(form) {
                     if (form && form.name) {
-                        var p = new Player(form.name);
-                        p.pieces = game.drawPieces(6);
-                        game.players[p.name] = p;
-
-                        // if first player, make it his turn
-                        if (Object.keys(game.players).length == 1)
-                            p.has_turn = true;
+                        addPlayerToGame(game, form.name);
 
                         // TODO replace set cookie with cookie API?
                         response.writeHead(200,{
@@ -308,11 +331,12 @@ function handlePlayers(request, response, game, path) {
                         response.end();
                     }
                 }
+            }
             requestBody(request, func);
             return;
-        }
-        else
+        } else {
             var r = JSON.stringify(game.players);
+        }
 
     } else {
         // return info on a specific player
@@ -422,9 +446,14 @@ function handleGames(request, response, path) {
             // add a new game object
             requestBody(request, function(form) {
                 var gamenm = form.name;
-                while (games[gamenm])  // game already exists
+                while (games[gamenm]) {  // game already exists
                     gamenm = gamenm+Math.floor(Math.random()*10);
-                games[gamenm] = new Game(gamenm);
+                }
+                var game = new Game(gamenm);
+                var jar = new cookies(request, response);
+                var p = jar.get('player');
+                games[gamenm] = game;
+                addPlayerToGame(game, p);
                 respOk(response, '', 'text/json');
             });
         } else {
@@ -454,16 +483,18 @@ function handleChat(request, response, chat) {
     if (request.method == "POST") {
         // add a line to the chat log
         requestBody(request, function(form) {
-            while (chat.length > CHATLINES)
+            while (chat.length > CHATLINES) {
                 chat.shift();
+            }
 
             /* If data is present in the chat, then increment the last id,
              * otherwise start at 0.
              */
-            if (chat.length)
+            if (chat.length) {
                 var id = chat[chat.length-1]['id']+1;
-            else
+            } else {
                 var id = 0;
+            }
             chat.push({
                 id: id,  // chat line id
                 name: form.name,  // the user's name
@@ -479,8 +510,9 @@ function handleChat(request, response, chat) {
         var lastid = +form.lastid;
         if (lastid >= 0) {
             for (var i=0; i<chat.length; i++) {
-                if (chat[i]['id'] == lastid)
+                if (chat[i]['id'] == lastid) {
                     break;
+                }
             }
             var r = JSON.stringify(chat.slice(i+1));
         } else {
