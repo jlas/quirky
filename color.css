@@ -6,10 +6,10 @@
 */
 
 body { background-image: url("light_noise_diagonal.png"); }
-a { color: #4E5C7D; }
+#no_games, .logo, a { color: #4E5C7D; }
 a:hover { color: #FFAF5A; }
 
-button {
+button[disabled], button[disabled]:hover, button[disabled]:active, button {
     border: 1px solid black;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -24,6 +24,8 @@ button {
 }
 button:hover { background: #efefef; }
 button:active { background: #dfdfdf; }
+
+button[disabled], button[disabled]:hover, button[disabled]:active { color: gray; }
 
 #howtobttn {
     border: 2px dotted #4E5C7D;
@@ -41,16 +43,13 @@ button:active { background: #dfdfdf; }
 #howtobttn:hover { background: #ffaf5a; }
 #howtobttn:active { background: #ff9933; }
 
-.logo { color: #4E5C7D; }
-
 .error {
     border: red 1px solid;
     background: lightgray;
     color: red;
 }
 
-.boardpiece { background: url("wood.png"); }
-.piece { background: url("wood.png"); }
+.boardpiece, .piece { background: url("wood.png"); }
 
 #board {
     border: 1px #A3B0B3 solid;
@@ -63,10 +62,6 @@ button:active { background: #dfdfdf; }
     color: white;
     background-color: #A3B0B3;
 }
-
-.panel table { color: white; }
-
-#no_games { color: #4E5C7D; }
 
 .text {
     background: #F6F7FA;

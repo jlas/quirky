@@ -60,6 +60,7 @@ var CHATIN = '#chat_input';
 var CHATLOG = '#chat_log';
 var CHATPNL = '#chat_panel';
 var COUNTDOWN = '#countdown';
+var ENDTURN = '#end_turn';
 var ERRORS = '#errors';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
@@ -174,14 +175,17 @@ function drawTurnInfo(pdata) {
 
     // allow player to end his turn
     if (my_player["has_turn"]) {
-        $(TURN).show();
-        $(TURN+"> button")[0].onclick = function() {
+        $(ENDTURN).removeAttr('disabled');
+        $(TURN).html("It's your turn! You have " +
+                     "<span id='countdown'>0m 0s</span> left.");
+        $(ENDTURN)[0].onclick = function() {
             $.post("/games/"+my_game+"/players", {end_turn: true}, function() {
                 getPlayers();
             });
         };
     } else {
-        $(TURN).hide();
+        $(ENDTURN).attr('disabled', '');
+        $(TURN).html("It's not your turn.");
     }
     getMyPieces(my_player);
     getPiecesLeft();
@@ -198,7 +202,7 @@ function getMyPieces(player) {
         $(PIECES).append('<div class="piece" style="color:'+
                          pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
         $(PIECECLS+":last-child").data("piece", piece);
-        $(PIECES).append("<div style='float: left; margin: 2px'>&nbsp</div>");
+        $(PIECES).append("<div style='float: left; margin: 1px'>&nbsp</div>");
     }
 
     $(PIECECLS).width($(GRIDCLS).width());

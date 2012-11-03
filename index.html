@@ -86,16 +86,10 @@
     <div id="game_room" style="display: none">
 
       <div id="sideboard" class="panel">
-        <p><button id="leave_game">&#8678; Leave Room</button></p>
-        <div id="turn" style="display: none;">
-          <p>It's your turn! You have <span id="countdown">0m 0s</span> left.</p>
-          <button>End my turn</button>
-        </div>
-        <p>Pieces Left:
-          <span id="game_pieces"></span>
-        </p>
-
-        <p>My Pieces:</p>
+        <button id="leave_game">&#8678; Leave Room</button>
+        <p id="turn"></p>
+        <button id="end_turn">End my turn</button>
+        <p>My Pieces (out of <span id="game_pieces"></span>)</p>
         <div id="pieces"></div>
         <div id="errors"></div>
         <div id="player_table">
@@ -122,8 +116,7 @@
     <!-- Loading Game -->
 
     <div id="loading_game" style="display: none;">
-      <p>Game room loading.</p>
-      <p>Thanks for trying out Quirky!</p>
+      <p>Loading.</p>
     </div>
 
     <!-- How to play -->
@@ -164,6 +157,11 @@
       </ul>
       <a href="">&#8678; Back to Lobby</a>
     </div>
+
+    <footer>
+      Created by <a href="http://www.twitter.com/jlas_">@jlas_</a>.
+      Fork it on <a href="http://www.github.com/jlas/quirky">GitHub</a>.
+    </footer>
 
   </body>
 </html>

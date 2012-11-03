@@ -7,6 +7,11 @@
 
 body { font-family: "Open Sans", sans-serif;}
 
+#loading_game, #add_guest_form, #no_games, #sideboard > p, footer, .error,
+.logo, .boardpiece, .piece, .grid { text-align: center; }
+
+.panel table { text-align: left; }
+
 a {
     font-weight: bold;
     text-decoration: none;
@@ -19,10 +24,7 @@ button {
     font-size: 1.4em;
 }
 
-#add_guest_form {
-    text-align: center;
-    font-size: 2em;
-}
+#loading_game, #add_guest_form, #no_games { font-size: 2em; }
 
 #howtobttn {
     font-size: 1.2em;
@@ -34,35 +36,13 @@ button {
 .logo {
     font-family: 'Chango', cursive;
     font-weight: bold;
-    text-align: center;
     font-size: 4em;
 }
 
-.error { text-align: center; }
-
-.boardpiece {
+.boardpiece, .piece, .grid {
     font-weight: bold;
-    text-align: center;
     font-size: 200%
 }
 
-.piece {
-    font-weight: bold;
-    text-align: center;
-    font-size: 200%
-}
-
-.grid {
-    font-weight: bold;
-    text-align: center;
-    font-size: 200%
-}
-
-.panel table { text-align: left; }
-
-#no_games {
-    font-size: 2em;
-    text-align: center;
-}
-
+#turn { font-size: 1.3em; }
 #add_guest_form { font-size: 2em; }
