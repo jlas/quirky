@@ -29,28 +29,6 @@ input {
     padding: 0 0;
 }
 
-dl {
-    clear: both;
-    width: 100%;
-}
-
-dd, dt {
-    float: left;
-    width: 25%;
-    margin: 0;
-}
-
-dt {
-    position: relative;
-    left: 10px;
-}
-
-.has_turn:before {
-    content: "\261b";
-    left: -10px;
-    position: relative;
-}
-
 hr { clear: both; }
 
 #howtobttn {
@@ -100,6 +78,34 @@ hr { clear: both; }
 .boardpiece, .grid { float: left; }
 .piece { float: left; z-index: 1;}
 .snapgrid { }
+
+/* Score list */
+
+dl {
+    clear: both;
+    width: 100%;
+}
+
+dd, dt {
+    float: left;
+    margin: 0;
+}
+
+dd {
+    width: 13%;
+}
+
+dt {
+    position: relative;
+    left: 10px;
+    width: 37%;
+}
+
+.has_turn:before {
+    content: "\261b";
+    left: -10px;
+    position: relative;
+}
 
 /* lobby */
 
