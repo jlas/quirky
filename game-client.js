@@ -41,7 +41,7 @@ var ushapes = {
 };
 
 // How long to let each turn last for, in seconds
-var COUNTDOWNTIME = 300;  // 5 min
+var COUNTDOWNTIME = 10;  // 5 min
 
 // My Turn state
 var HAVETURN = null;
@@ -125,8 +125,9 @@ function onGetPlayers(pdata) {
     $(PLAYERS).empty();
     // display all players
     for (var p in pdata) {
-        if (!pdata.hasOwnProperty(p))
+        if (!pdata.hasOwnProperty(p)) {
             continue;
+        }
         var turn = pdata[p]['has_turn'] ? "has_turn" : "";
         $(PLAYERS).append("<dt class='" + turn + "'>" + p + "</dt>" +
                           "<dd>" + pdata[p]['points'] + "</dd>");
@@ -543,9 +544,16 @@ function drawGame() {
     $(SIDEBOARD).append($(CHATPNL));
     $(CHATPNL).addClass('game_chat_panel');
     $(LEAVEGAME)[0].onclick = function () {
-        $.removeCookie('game');
-        location.reload();
         clearTimeout(GETPLAYERSTID);
+        $.ajax({
+            type: 'DELETE',
+            url: "/games/" + $.cookie("game") + "/players",
+            data: {name: $.cookie("player")},
+            success: function() {
+                $.removeCookie('game');
+                location.reload();
+            }
+        });
     };
 
     // setup future calls

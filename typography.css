@@ -23,6 +23,7 @@ button {
     text-shadow: rgba(0,0,0,.4) 0 1px 0;
     font-size: 1.4em;
 }
+#add_game > button { font-size: 1.2em; }
 
 #loading_game, #add_guest_form, #no_games { font-size: 2em; }
 

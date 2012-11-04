@@ -47,9 +47,9 @@ function Game (name) {
     this.name = name;
     this.board = [];  // list representation
     this.boardmat = [];  // matrix representation
-    for (var i=0; i<181; i++)
+    for (var i=0; i<181; i++) {
         this.boardmat[i] = new Array(181);
-    this.pieces = [];
+    }
     this.players = {};
     this.turn_pieces = [];  // pieces played this turn
     this.chat = []  // chat log
@@ -57,10 +57,21 @@ function Game (name) {
     // board dimensions
     this.dimensions = {'top': 90, 'right': 90, 'bottom': 90, 'left': 90};
 
+    /* Keep track of the pieces by having a list of piece objects each with a
+     * count attribute that tracks how many of that piece are left. When this
+     * reaches 0, we remove the piece object from the list.
+     */
+    this.pieces = [];
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
     var shapes =  ['circle', 'star', 'diamond', 'square', 'triangle', 'clover'];
     for (c in colors) {
+        if (!colors.hasOwnProperty(c)) {
+            continue;
+        }
         for (s in shapes) {
+            if (!shapes.hasOwnProperty(s)) {
+                continue;
+            }
             this.pieces.push({'piece': new Piece(shapes[s], colors[c]), 'count': 3});
         }
     }
@@ -70,6 +81,10 @@ Game.prototype.toJSON = function() {
     return {'name': this.name, 'players': this.players};
 }
 
+/**
+ * Draw some number of random pieces from the game stash.
+ * @param num: {number} number of pieces to draw
+ */
 Game.prototype.drawPieces = function(num) {
     // draw num pieces from the pile
     var draw = [];
@@ -82,6 +97,29 @@ Game.prototype.drawPieces = function(num) {
         }
     }
     return draw;
+}
+
+/**
+ * Return a list of pieces to the game.
+ * @param pieces: {array} of Piece objects
+ */
+Game.prototype.returnPieces = function(pieces) {
+    for (var p in pieces) {
+        if (!pieces.hasOwnProperty(p)) {
+            continue;
+        }
+        var piece = pieces[p];
+        var found = this.pieces.some(function(x) {
+            if (piece.equals(x.piece)) {
+                x.count += 1;
+                return true;
+            }
+        });
+        if (!found) {  // first piece of its kind
+            this.pieces.push({'piece': new Piece(piece.shape, piece.color),
+                              'count': 1});
+        }
+    }
 }
 
 function Player (name) {
@@ -259,14 +297,15 @@ function requestBody(request, onEnd) {
 }
 
 /**
- * End the turn for the player and start for the next.
- * @param {obj} player: the player whose turn will end
+ * Pass the turn to the next player,
+ * @param game: {obj} game object
+ * @param player: {obj} player object
  */
-function switchPlayers(game, player) {
+function nextTurn(game, player) {
+    if (player.has_turn === false) {  // we assume that player has the turn
+        return;
+    }
     player.has_turn = false;
-
-    // clear pieces played this turn
-    game.turn_pieces = [];
 
     // give next player the turn
     var _players = Object.keys(game.players);
@@ -274,10 +313,19 @@ function switchPlayers(game, player) {
         _players.length;
     var next = game.players[_players[next_idx]];
     next.has_turn = true;
-
-    // draw new pieces
+    // next player draws new pieces
     next.pieces = next.pieces.concat(game.drawPieces(
         6 - next.pieces.length));
+}
+
+/**
+ * End the turn for the player and start for the next.
+ * @param {obj} player: the player whose turn will end
+ */
+function switchPlayers(game, player) {
+    // clear pieces played this turn
+    game.turn_pieces = [];
+    nextTurn(game, player);
 }
 
 /**
@@ -291,7 +339,7 @@ function addPlayerToGame(game, playernm) {
     game.players[p.name] = p;
 
     // if first player, make it his turn
-    if (Object.keys(game.players).length == 1) {
+    if (Object.keys(game.players).length === 1) {
         p.has_turn = true;
     }
 }
@@ -318,7 +366,7 @@ function handlePlayers(request, response, game, path) {
                     }
                 }
             } else {
-                // add player
+                // add player to a game
                 var func = function(form) {
                     if (form && form.name) {
                         addPlayerToGame(game, form.name);
@@ -334,15 +382,35 @@ function handlePlayers(request, response, game, path) {
             }
             requestBody(request, func);
             return;
-        } else {
+        } else if (request.method == 'DELETE') {
+            // delete player from a game
+            var func = function(form) {
+                if (form && form.name) {
+                    player = game.players[form.name];
+                    if (player === undefined) {
+                        // huh? player is not in this game
+                        response.writeHead(404, {'Content-Type': 'text/json'});
+                        response.end();
+                        return;
+                    }
+                    nextTurn(game, player);
+                    game.returnPieces(player.pieces);
+                    delete game.players[form.name];
+                    if (Object.keys(game.players).length === 0) {
+                        delete games[game.name];
+                    }
+                    respOk(response);
+                }
+            }
+            requestBody(request, func);
+            return;
+        }  else {
             var r = JSON.stringify(game.players);
         }
 
     } else {
         // return info on a specific player
-
         var player = game.players[path[0]];
-
         if (typeof player === 'undefined') {
             // player not found
             response.writeHead(404, {'Content-Type': 'text/json'});
