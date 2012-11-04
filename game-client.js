@@ -46,9 +46,6 @@ var COUNTDOWNTIME = 300;  // 5 min
 // My Turn state
 var HAVETURN = null;
 
-// right pointing finger
-var finger = "&#9755;";
-
 // Define DOM element IDs
 var ADDGAME = '#add_game';
 var ADDGUEST = '#add_guest';
@@ -74,7 +71,6 @@ var LOBBYCHAT = '#lobby_chat';
 var NOGAMESMSG = '#no_games';
 var PIECES = '#pieces';
 var PLAYERS = '#players';
-var PLAYERTBL = '#player_table';
 var SIDEBOARD = '#sideboard';
 var TURN = '#turn';
 
@@ -126,21 +122,14 @@ function getPlayers() {
  * @param {obj} pdata json data from the server
  */
 function onGetPlayers(pdata) {
-    // if no players to display, hide the player table
-    $.isEmptyObject(pdata) ? $(PLAYERTBL).hide() : $(PLAYERTBL).show();
-
     $(PLAYERS).empty();
     // display all players
     for (var p in pdata) {
         if (!pdata.hasOwnProperty(p))
             continue;
-        var turn = pdata[p]['has_turn'] ? finger : "";
-        $(PLAYERS).append(
-            "<tr>"+
-            "<td class='pturn'>"+turn+"</td>"+
-            "<td class='pdata'>"+p+"</td>"+
-            "<td class='pdata'>"+pdata[p]['points']+"</td>"+
-            "</tr>");
+        var turn = pdata[p]['has_turn'] ? "has_turn" : "";
+        $(PLAYERS).append("<dt class='" + turn + "'>" + p + "</dt>" +
+                          "<dd>" + pdata[p]['points'] + "</dd>");
     }
 
     var my_game = $.cookie("game");

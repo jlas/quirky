@@ -29,6 +29,30 @@ input {
     padding: 0 0;
 }
 
+dl {
+    clear: both;
+    width: 100%;
+}
+
+dd, dt {
+    float: left;
+    width: 25%;
+    margin: 0;
+}
+
+dt {
+    position: relative;
+    left: 10px;
+}
+
+.has_turn:before {
+    content: "\261b";
+    left: -10px;
+    position: relative;
+}
+
+hr { clear: both; }
+
 #howtobttn {
     position: absolute;
     right: 2em;
@@ -41,7 +65,6 @@ input {
 
 #errors {
     clear: both;
-    padding: 2% 0 0 0;
 }
 
 .error { clear: both; }
@@ -58,6 +81,8 @@ input {
 }
 
 #pieces, #sideboard > button { width: 100%; }
+#pieces {height: 10%; }
+#players { height: 10%; }
 
 #game_room_main {
     position: absolute;
@@ -75,16 +100,6 @@ input {
 .boardpiece, .grid { float: left; }
 .piece { float: left; z-index: 1;}
 .snapgrid { }
-
-/* player table */
-
-#player_table {
-    float: left;
-    width: 100%;
-}
-
-.pturn { width: 10% }
-.pdata { width: 40%; }
 
 /* lobby */
 
@@ -158,8 +173,8 @@ input {
     width: 19%;
 }
 
-#chat_panel.game_chat_panel { height: 40%; }
-.game_chat_panel > #chat_log { height: 88%; top: 12%; }
+#chat_panel.game_chat_panel { height: 35%; }
+.game_chat_panel > #chat_log { height: 82%; top: 15%; }
 
 /* add guest */
 
