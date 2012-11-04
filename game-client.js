@@ -41,7 +41,7 @@ var ushapes = {
 };
 
 // How long to let each turn last for, in seconds
-var COUNTDOWNTIME = 10;  // 5 min
+var COUNTDOWNTIME = 300;  // 5 min
 
 // My Turn state
 var HAVETURN = null;
