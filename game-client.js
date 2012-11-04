@@ -441,11 +441,14 @@ function drawGameList(games) {
         }
         var name = games[i]['name'];
         var node = $("<td><a href='#game_room'>"+name+"</a></td>")[0];
-        node.onclick = function () {
-            $.cookie('game', name);
-            clearTimeout(GETGAMESTID);
-            location.reload();
-        };
+        node.onclick = function (name) {
+            // nested function to capture name in a closure
+            return function() {
+                $.cookie('game', name);
+                clearTimeout(GETGAMESTID);
+                location.reload();
+            }
+        }(name);
         $(GAMES).append("<tr>"+
                         "<td>"+Object.keys(games[i]['players']).length+"</td>"+
                         "<td></td>"+
@@ -462,34 +465,40 @@ function drawGameList(games) {
     }
 
     function submit() {
-        var name = $(ADDGAME+"> input")[0].value;
-        $.post('/games', {name: name}, function() {
-            $(ADDGAME+"> input").val('');  // post was succesful, so clear input
-            $(LOBBY).hide();
-            $(LOADINGGAME).show();
+        $.post('/games', {name: $(ADDGAME+"> input")[0].value},
 
-            var tries = 0;
-            function loadgame() {
-                $.getJSON("/games", function(games) {
-                    for (var i in games) {
-                        if (!games.hasOwnProperty(i)) {
-                            continue;
-                        }
-                        if (name === games[i]['name']) {
-                            // game is ready
-                            $.cookie('game', name);
-                            location.reload();
-                            return;
-                        }
-                    }
-                    if (++tries > 3) {
-                        return;
-                    };
-                });
-                setTimeout(loadgame, 1000);
-            }
-            setTimeout(loadgame, 1000);
-        });
+               /**
+                * @param data: {obj} contains potential random game name,
+                *     e.g. {name: <game name>}
+                */
+               function(data) {
+                   // post was succesful, so clear input
+                   $(ADDGAME+"> input").val('');
+                   $(LOBBY).hide();
+                   $(LOADINGGAME).show();
+
+                   var tries = 0;
+                   function loadgame() {
+                       $.getJSON("/games", function(games) {
+                           for (var i in games) {
+                               if (!games.hasOwnProperty(i)) {
+                                   continue;
+                               }
+                               if (data.name === games[i]['name']) {
+                                   // game is ready
+                                   $.cookie('game', data.name);
+                                   location.reload();
+                                   return;
+                               }
+                           }
+                           if (++tries > 3) {
+                               return;
+                           };
+                       });
+                       setTimeout(loadgame, 1000);
+                   }
+                   setTimeout(loadgame, 1000);
+               });
     }
 
     // TODO: figure out why jquery click and keydown functions screw this up?
@@ -502,28 +511,12 @@ function drawGameList(games) {
 }
 
 /**
- * Draw the logo
- */
-function drawLogo() {
-    // var i=0;
-    // var logo = ["Q", "u", "i", "r", "k", "y"].map(function(x) {
-    //     var color = Object.keys(pastels)[i];
-    //     i += 1;
-    //     return ("<span style='color: " +
-    //             pastels[color] + ";'>" + x + "</span>");
-    // });
-    // $('.logo').html(logo.join(''));
-    $('.logo').html("Quirky");
-}
-
-/**
  * Draw the lobby.
  */
 function drawLobby(games) {
     $(LOBBYCHAT).append($(CHATPNL)[0]);
     $(CHATPNL).addClass('lobby_chat_panel');
     drawGameList(games);
-    drawLogo();
 
     // setup future calls to get game list
     function pollGames() {

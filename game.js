@@ -514,7 +514,8 @@ function handleGames(request, response, path) {
             // add a new game object
             requestBody(request, function(form) {
                 var gamenm = form.name;
-                while (games[gamenm]) {  // game already exists
+                while (games[gamenm]) {
+                    // game already exists, randomize a new one
                     gamenm = gamenm+Math.floor(Math.random()*10);
                 }
                 var game = new Game(gamenm);
@@ -522,7 +523,8 @@ function handleGames(request, response, path) {
                 var p = jar.get('player');
                 games[gamenm] = game;
                 addPlayerToGame(game, p);
-                respOk(response, '', 'text/json');
+                // respond with the game name, in case we randomized a new one
+                respOk(response, JSON.stringify({name: gamenm}), 'text/json');
             });
         } else {
             // return info on the games collection
