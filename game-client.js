@@ -20,7 +20,9 @@
  * @author juan.lasheras@gmail.com (Juan Lasheras)
  */
 
-"use strict";
+(function () {
+    "use strict";
+}());
 
 var pastels = {
     "green": "#A0E7A0",
@@ -51,7 +53,6 @@ var ADDGAME = '#add_game';
 var ADDGUEST = '#add_guest';
 var ADDGUESTFRM = '#add_guest_form';
 var ADDPIECE = '#add_piece';
-var ADDPLAYER = '#add_player';
 var BOARD = '#board';
 var CHATIN = '#chat_input';
 var CHATLOG = '#chat_log';
@@ -110,13 +111,6 @@ function countdownTimer() {
     countdown();
 }
 
-/**
- * Process player data.
- */
-function getPlayers() {
-    $.getJSON("/games/"+$.cookie("game")+"/players", onGetPlayers);
-}
-
 /*
  * Operates on player data returned from the server.
  * @param {obj} pdata json data from the server
@@ -128,9 +122,9 @@ function onGetPlayers(pdata) {
         if (!pdata.hasOwnProperty(p)) {
             continue;
         }
-        var turn = pdata[p]['has_turn'] ? "has_turn" : "";
+        var turn = pdata[p].has_turn ? "has_turn" : "";
         $(PLAYERS).append("<dt class='" + turn + "'>" + p + "</dt>" +
-                          "<dd>" + pdata[p]['points'] + "</dd>");
+                          "<dd>" + pdata[p].points + "</dd>");
     }
 
     var my_game = $.cookie("game");
@@ -153,6 +147,13 @@ function onGetPlayers(pdata) {
 }
 
 /**
+ * Process player data.
+ */
+function getPlayers() {
+    $.getJSON("/games/"+$.cookie("game")+"/players", onGetPlayers);
+}
+
+/**
  * Draw player's pieces and It's Your Turn info.
  * @param {obj} pdata json data from the server
  */
@@ -164,7 +165,7 @@ function drawTurnInfo(pdata) {
     $(ADDPIECE).show();
 
     // allow player to end his turn
-    if (my_player["has_turn"]) {
+    if (my_player.has_turn) {
         $(ENDTURN).removeAttr('disabled');
         $(TURN).html("It's your turn! You have " +
                      "<span id='countdown'>0m 0s</span> left.");
@@ -187,8 +188,8 @@ function drawTurnInfo(pdata) {
  * @param {obj} player
  */
 function getMyPieces(player) {
-    for (var i in player["pieces"]) {
-        var piece = player["pieces"][i];
+    for (var i in player.pieces) {
+        var piece = player.pieces[i];
         $(PIECES).append('<div class="piece" style="color:'+
                          pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
         $(PIECECLS+":last-child").data("piece", piece);
@@ -199,7 +200,7 @@ function getMyPieces(player) {
     $(PIECECLS).height($(GRIDCLS).height());
     $(PIECECLS).css("font-size", $(GRIDCLS).css("font-size"));
 
-    if (player['has_turn'])
+    if (player.has_turn)
         $(PIECECLS).draggable({
             containment: "#board",
             snap: ".snapgrid"
@@ -224,15 +225,15 @@ function getPiecesLeft() {
  * piece will be added or we get an error back for invalid placements.
  */
 function onPieceDrop(event, ui) {
-    var col = $(this).data()['col'];
-    var row = $(this).data()['row'];
-    var piece = $(ui.draggable).data()['piece'];
+    var col = $(this).data().col;
+    var row = $(this).data().row;
+    var piece = $(ui.draggable).data().piece;
     $.ajax({
         type: 'POST',
         url: "/games/"+$.cookie("game")+"/board",
         data: {
-            shape: piece['shape'],
-            color: piece['color'],
+            shape: piece.shape,
+            color: piece.color,
             row: row,
             column: col
         },
@@ -255,22 +256,19 @@ function onPieceDrop(event, ui) {
 function getBoard() {
     var game = $.cookie("game");
     var board_margin = 5;
-    var rows = 0, cols = 0;
-    var dimensions = {};
 
     $.getJSON("/games/"+game+"/dimensions", function (data) {
         var dimensions = data;
         // add 5 for each side since players can add up to 5 pieces per turn
-        var top = dimensions["top"] - board_margin;
-        var bottom = dimensions["bottom"] + board_margin;
-        var left = dimensions["left"] - board_margin;
-        var right = dimensions["right"] + board_margin;
+        var top = dimensions.top - board_margin;
+        var bottom = dimensions.bottom + board_margin;
+        var left = dimensions.left - board_margin;
+        var right = dimensions.right + board_margin;
 
         $(BOARD).empty();
 
         var rows = bottom - top + 1;
         var cols = right - left + 1;
-        var k = 1;
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < cols; j++) {
                 $(BOARD).append('<div class="grid"></div>');
@@ -294,30 +292,31 @@ function getBoard() {
         //$(BOARD).css("height", (($(GRIDCLS).height()) * 10))
 
         $.getJSON("/games/"+game+"/board", function (data) {
+            var i, idx;
             // place pieces on board
             if (data.length > 0) {
                 for (i in data) {
                     var piece = data[i].piece;
                     var row = data[i].row;
                     var col = data[i].column;
-                    var drow = row - dimensions["top"] + board_margin;
-                    var dcol = col - dimensions["left"] + board_margin;
-                    var idx = drow*cols + dcol + 1;
+                    var drow = row - dimensions.top + board_margin;
+                    var dcol = col - dimensions.left + board_margin;
+                    idx = drow*cols + dcol + 1;
                     $(GRIDCLS+":nth-child("+idx+")").addClass("boardpiece");
                     $(GRIDCLS+":nth-child("+idx+")").css("color",
                                                       pastels[piece.color]);
                     $(GRIDCLS+":nth-child("+idx+")").html(ushapes[piece.shape]);
                 }
             } else {  // place marker in center if board is empty
-                var idx = parseInt(($(GRIDCLS).length + 1) / 2);
+                idx = parseInt(($(GRIDCLS).length + 1) / 2, 10);
                 $(GRIDCLS+":nth-child("+idx+")").addClass('snapgrid');
             }
 
             // iterate through board and mark spots adjacent to pieces
             if (data.length > 0) {
                 var offsets = [1, -1, cols, -cols];
-                for (var i = 1; i <= $(GRIDCLS).length; i++) {
-                    var cur = $(GRIDCLS+":nth-child("+i+")")
+                for (i = 1; i <= $(GRIDCLS).length; i++) {
+                    var cur = $(GRIDCLS+":nth-child("+i+")");
                     for (var j in offsets) {
                         var next = $(GRIDCLS+":nth-child("+(i+offsets[j])+")");
                         if (!cur.hasClass("boardpiece") &&
@@ -337,10 +336,10 @@ function getBoard() {
                     $(SNAPGRIDCLS).html("");
                     $(BOARD).removeClass("activate");
                 },
-                drop: onPieceDrop,
+                drop: onPieceDrop
             });
-        })
-    })
+        });
+    });
 }
 
 /**
@@ -359,10 +358,12 @@ function drawChatIn() {
     function submit() {
         var my_player = $.cookie("player");
         var game = $.cookie("game");
-        if (game)
-            var resource = "/games/"+game+"/chat";
-        else
-            var resource = "/chat";
+        var resource;
+        if (game) {
+            resource = "/games/"+game+"/chat";
+        } else {
+            resource = "/chat";
+        }
         $.post(resource, {
             input: $(CHATIN+"> input")[0].value,
             name: my_player
@@ -391,7 +392,7 @@ function drawAddGuest() {
         var name =  $(ADDGUESTFRM+"> input")[0].value;
         $.cookie("player", name);
         main();
-    };
+    }
     $(ADDGUESTFRM+"> button").click(submit);
     $(ADDGUESTFRM+"> input:visible").focus();
     $(ADDGUESTFRM+"> input").keydown(function(event) {
@@ -418,13 +419,13 @@ var drawChatLog = function() {
                 return;
             }
             for (var i=0; i<data.length; i++) {
-                var name = data[i]['name'];
+                var name = data[i].name;
                 var msgcls = (name == my_player) ? "mymsg": "othermsg";
-                $(CHATLOG).prepend('<div><span class="'+msgcls+'">'+
-                                   data[i]['name']+'</span>: '+
-                                   data[i]['input']+'</div>');
+                $(CHATLOG).prepend('<div><span class="' + msgcls + '">' +
+                                   data[i].name + '</span>: ' +
+                                   data[i].input + '</div>');
             }
-            lastids[uri] = data[i-1] ? data[i-1]['id']: undefined;
+            lastids[uri] = data[i-1] ? data[i-1].id : undefined;
         });
     };
 }();
@@ -433,13 +434,13 @@ var drawChatLog = function() {
  * Draw the game list.
  */
 function drawGameList(games) {
-    $(GAMES).empty()
+    $(GAMES).empty();
     var thead = "<th>Game Room</th><th>Players</th><th></th>";
     for (var i in games) {
         if (!games.hasOwnProperty(i)) {
             continue;
         }
-        var name = games[i]['name'];
+        var name = games[i].name;
         var node = $("<td><a href='#game_room'>"+name+"</a></td>")[0];
         node.onclick = function (name) {
             // nested function to capture name in a closure
@@ -447,10 +448,10 @@ function drawGameList(games) {
                 $.cookie('game', name);
                 clearTimeout(GETGAMESTID);
                 location.reload();
-            }
+            };
         }(name);
         $(GAMES).append("<tr>"+
-                        "<td>"+Object.keys(games[i]['players']).length+"</td>"+
+                        "<td>"+Object.keys(games[i].players).length+"</td>"+
                         "<td></td>"+
                         "</tr>");
         $(GAMES+">tbody>tr:last-child").prepend(node);
@@ -484,7 +485,7 @@ function drawGameList(games) {
                                if (!games.hasOwnProperty(i)) {
                                    continue;
                                }
-                               if (data.name === games[i]['name']) {
+                               if (data.name === games[i].name) {
                                    // game is ready
                                    $.cookie('game', data.name);
                                    location.reload();
@@ -493,7 +494,7 @@ function drawGameList(games) {
                            }
                            if (++tries > 3) {
                                return;
-                           };
+                           }
                        });
                        setTimeout(loadgame, 1000);
                    }
@@ -574,7 +575,7 @@ function gameOrLobby(games) {
     // User is not in a valid game
     if (typeof games[my_game] === 'undefined') {
         $.removeCookie('game');
-        $(LOBBY).show()
+        $(LOBBY).show();
         drawLobby(games);
     } else {
         $(GAMEROOM).show();
