@@ -45,7 +45,8 @@
           <p>Make one!</p>
         </div>
         <div id="add_game">
-          <input type="text" class="text" />
+          <input type="text" class="text" required maxlength="12"
+                 title="Game Room name (max 12 characters.)" />
           <button>New Game</button>
         </div>
         <hr/>
@@ -66,7 +67,8 @@
         <p>is an open source clone of the
           <a href="http://www.google.com/search?q=qwirkle">Qwirkle</a> board game.</p>
         <p>What would you like to be called?</p>
-        <input type="text" class="text" />
+        <input type="text" class="text" required maxlength="12"
+               title="User name (max 12 characters.)"/>
         <button>Ok</button>
       </div>
     </div>
@@ -75,7 +77,8 @@
 
     <div id="chat_panel" style="display: none;">
       <div id="chat_input" style="display: none">
-        <input type="text" class="text" />
+        <input type="text" class="text" required maxlength="500"
+               title="Chat text (max 500 characters.)" />
         <button>Chat</button>
       </div>
       <div id="chat_log" class="text"></div>

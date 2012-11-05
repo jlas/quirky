@@ -42,6 +42,10 @@ var ushapes = {
     "clover": "&#9827;"
 };
 
+// REs to limit input
+NAMERE = /^.{1,12}$/;
+CHATRE = /^.{1,500}$/;
+
 // How long to let each turn last for, in seconds
 var COUNTDOWNTIME = 300;  // 5 min
 
@@ -369,7 +373,13 @@ function drawHowTo() {
 function drawChatIn() {
     $(CHATIN).show();
     function submit() {
-        var my_player = $.cookie("player");
+        var chatin = $(CHATIN+"> input")[0].value;
+        if (!CHATRE.test(chatin)) {
+            if(chatin) {
+                alert("Your input text is too long!");
+            }
+            return false;
+        }
         var game = $.cookie("game");
         var resource;
         if (game) {
@@ -378,8 +388,8 @@ function drawChatIn() {
             resource = "/chat";
         }
         $.post(resource, {
-            input: $(CHATIN+"> input")[0].value,
-            name: my_player
+            input: chatin,
+            name: $.cookie("player")
         }, function() {
             $(CHATIN+"> input").val('');  // post was succesful, so clear input
             drawChatLog();
@@ -403,6 +413,12 @@ function drawAddGuest() {
     $(ADDGUEST).show();
     function submit() {
         var name =  $(ADDGUESTFRM+"> input")[0].value;
+        if (!NAMERE.test(name)) {
+            if(name) {
+                alert("Your input text is too long!");
+            }
+            return false;
+        }
         $.cookie("player", name);
         main();
     }
@@ -479,7 +495,14 @@ function drawGameList(games) {
     }
 
     function submit() {
-        $.post('/games', {name: $(ADDGAME+"> input")[0].value},
+        var gamenm = $(ADDGAME+"> input")[0].value;
+        if (!NAMERE.test(gamenm)) {
+            if(gamenm) {
+                alert("Your input text is too long!");
+            }
+            return false;
+        }
+        $.post('/games', {name: gamenm},
 
                /**
                 * @param data: {obj} contains potential random game name,
