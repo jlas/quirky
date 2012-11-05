@@ -197,9 +197,9 @@ function addGamePiece(game, gamepiece) {
             var samecolor = (adjacent.piece.color == piece.color);
             var sameshape = (adjacent.piece.shape == piece.shape);
 
-            console.log('piece: ' + piece.color + ' ' + piece.shape +
-                        ', adjacent: ' + adjacent.piece.color + ' ' +
-                        adjacent.piece.shape);
+            // console.log('piece: ' + piece.color + ' ' + piece.shape +
+            //             ', adjacent: ' + adjacent.piece.color + ' ' +
+            //             adjacent.piece.shape);
 
             // either samecolor or sameshape, not both
             if ((samecolor || sameshape) && !(samecolor && sameshape)) {
@@ -288,7 +288,7 @@ function addGamePiece(game, gamepiece) {
 // find player from request cookie
 function playerFromReq(request, response, game) {
     var jar = new cookies(request, response);
-    var p = jar.get('player');
+    var p = decodeURIComponent(jar.get('player'));
     return game.players[p];
 }
 
@@ -382,13 +382,10 @@ function handlePlayers(request, response, game, path) {
                 func = function(form) {
                     if (form && form.name) {
                         addPlayerToGame(game, form.name);
-
-                        // TODO replace set cookie with cookie API?
-                        response.writeHead(200,{
-                            'Content-Type': 'text/json',
-                            "Set-Cookie": ["player="+form.name+"; Path=/"]
-                        });
-                        response.end();
+                        var jar = new cookies(request, response);
+                        jar.set("player", encodeURIComponent(form.name),
+                                {httpOnly: false});
+                        respOk(response, '', 'text/json');
                     }
                 };
             }
@@ -453,8 +450,8 @@ function handleGame(request, response, game, path) {
             requestBody(request, function(form) {
 
                 var player = playerFromReq(request, response, game);
-                console.info('adding pieces, player:'+player.name);
-                console.info('form info:'+JSON.stringify(form));
+                // console.info('adding pieces, player:'+player.name);
+                // console.info('form info:'+JSON.stringify(form));
 
                 if (form && form.shape && form.color &&
                     form.row && form.column && player) {
@@ -479,7 +476,7 @@ function handleGame(request, response, game, path) {
 
                     if (idx > -1) {
                         var gp = new GamePiece(piece, row, column);
-                        console.info('adding piece:'+JSON.stringify(gp));
+                        // console.info('adding piece:'+JSON.stringify(gp));
                         resp = addGamePiece(game, gp);
                         if (typeof resp === "string") {
                             // add gamepiece failed
@@ -533,7 +530,7 @@ function handleGames(request, response, path) {
                 }
                 var game = new Game(gamenm);
                 var jar = new cookies(request, response);
-                var p = jar.get('player');
+                var p = decodeURIComponent(jar.get('player'));
                 games[gamenm] = game;
                 addPlayerToGame(game, p);
                 // respond with the game name, in case we randomized a new one
@@ -612,10 +609,17 @@ var server = http.createServer();
 
 server.on('request', function(request, response) {
 
-    //console.log('got request:'+JSON.stringify(request.headers));
+    //console.log('games: '+JSON.stringify(games));
+    //console.log('got url:'+request.url);
 
     var u = url.parse(request.url);
-    var path = u.pathname.split('/').filter(function(x) {return Boolean(x);});
+    var path = u.pathname.split('/').map(function(x) {
+        return decodeURIComponent(x);
+    }).filter(function(x) {
+        return Boolean(x);
+    });
+
+    //console.log('decode: '+JSON.stringify(path));
     //console.log('req headers:'+JSON.stringify(request.headers));
     //console.log('got path:'+JSON.stringify(path));
 
