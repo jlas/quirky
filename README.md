@@ -9,7 +9,7 @@ friendly yet.
 
 ## Run It
 
-$ node game.js
+    $ node game.js
 
 ## Requires
 
