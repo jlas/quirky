@@ -7,6 +7,14 @@ friendly yet.
 
 [Check out the demo](http://quirky.juanl.org)
 
+## Screenshots
+
+![quirky](https://raw.github.com/jlas/quirky/media/scrnshot1.png)
+
+* Game Lobby:
+
+![quirky](https://raw.github.com/jlas/quirky/media/scrnshot2.png)
+
 ## Run It
 
     $ node game.js
