@@ -2,15 +2,19 @@ Quirky
 ======
 
 Quirky is a [Qwirkle](http://www.google.com/search?q=qwirkle+board+game) board
-game clone built with node.js and jQuery. It is not mobile / tablet friendly
-yet.
+game clone built with node.js and jQuery. It is not mobile, tablet, or IE
+friendly yet.
 
 [Check out the demo](http://quirky.juanl.org)
+
+## Run It
+
+$ node game.js
 
 ## Requires
 
 * [node.js](http://nodejs.org/), tested with 0.4.7
-* cookies (https://github.com/jed/cookies)
+* cookies (https://github.com/jed/cookies) (install: $ npm install cookies)
 
 ### Third party libraries included (not written by me):
 

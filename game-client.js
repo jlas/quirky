@@ -195,9 +195,9 @@ function drawTurnInfo(pdata) {
         $(ENDTURN).attr('disabled', '');
         $(TURN).html("It's not your turn.");
     }
-    getMyPieces(my_player);
     getPiecesLeft();
     getBoard();
+    getMyPieces(my_player);
 }
 
 /**
@@ -210,12 +210,20 @@ function getMyPieces(player) {
         $(PIECES).append('<div class="piece" style="color:'+
                          pastels[piece.color]+'">'+ushapes[piece.shape]+'</div>');
         $(PIECECLS+":last-child").data("piece", piece);
-        $(PIECES).append("<div style='float: left; margin: 1px'>&nbsp</div>");
+        $(PIECES).append("<div style='float: left; margin: 3px'></div>");
     }
 
-    $(PIECECLS).width($(GRIDCLS).width());
-    $(PIECECLS).height($(GRIDCLS).height());
-    $(PIECECLS).css("font-size", $(GRIDCLS).css("font-size"));
+    function setDimensions() {
+        $(PIECECLS).width($(GRIDCLS).width());
+        $(PIECECLS).height($(GRIDCLS).height());
+        $(PIECECLS).css("font-size", $(GRIDCLS).css("font-size"));
+    }
+    /* Style switching is flaky here, we're depending on the width that was set
+     * in getBoard() and maybe that happens too fast sometimes. So we add a
+     * setTimeout to try setting dimensions again in a short while.
+     */
+    setDimensions();
+    setTimeout(setDimensions, 100);
 
     if (player.has_turn)
         $(PIECECLS).draggable({
