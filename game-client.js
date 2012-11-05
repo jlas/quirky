@@ -49,7 +49,7 @@ NAMERE = /^.{1,12}$/;
 CHATRE = /^.{1,500}$/;
 
 // How long to let each turn last for, in seconds
-var COUNTDOWNTIME = 300;  // 5 min
+var COUNTDOWNTIME = 60;  // 1 min
 
 // Max players per room
 var PLAYERLMT = 6;
@@ -509,6 +509,7 @@ function drawGameList(games) {
         $(NOGAMESMSG).show();
         $(GAMESHR).hide();
     } else {
+        $(NOGAMESMSG).hide();
         $(GAMESHR).show();
         $(GAMES).prepend(thead);
     }
