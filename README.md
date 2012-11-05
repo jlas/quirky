@@ -9,11 +9,11 @@ friendly yet.
 
 ## Screenshots
 
-![quirky](https://raw.github.com/jlas/quirky/media/scrnshot1.png)
+![quirky](https://raw.github.com/jlas/quirky/master/media/scrnshot1.png)
 
 * Game Lobby:
 
-![quirky](https://raw.github.com/jlas/quirky/media/scrnshot2.png)
+![quirky](https://raw.github.com/jlas/quirky/master/media/scrnshot2.png)
 
 ## Run It
 
