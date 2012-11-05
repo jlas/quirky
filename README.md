@@ -5,7 +5,7 @@ Quirky is a [Qwirkle](http://www.google.com/search?q=qwirkle+board+game) board
 game clone built with node.js and jQuery. It is not mobile / tablet friendly
 yet.
 
-[Check out the demo](quirky.juanl.org)
+[Check out the demo](http://quirky.juanl.org)
 
 ## Requires
 
