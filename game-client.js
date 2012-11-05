@@ -219,7 +219,9 @@ function getMyPieces(player) {
     function setDimensions() {
         $(PIECECLS).width($(GRIDCLS).width());
         $(PIECECLS).height($(GRIDCLS).height());
-        $(PIECECLS).css("font-size", $(GRIDCLS).css("font-size"));
+        var fontsize = $(GRIDCLS).css("font-size");
+        $(PIECECLS).css("font-size", fontsize);
+        $(PIECECLS).css("line-height", fontsize);
     }
     /* Style switching is flaky here, we're depending on the width that was set
      * in getBoard() and maybe that happens too fast sometimes. So we add a
@@ -315,8 +317,8 @@ function getBoard() {
 
         $(GRIDCLS).css("width", (100/cols)+"%");
         $(GRIDCLS).css("height", (100/rows)+"%");
-        $(GRIDCLS).css("font-size", Math.min($(GRIDCLS).height(),
-                                             $(GRIDCLS).width()));
+        var fontsize = Math.min($(GRIDCLS).height(), $(GRIDCLS).width());
+        $(GRIDCLS).css("font-size", fontsize);
 
         //$(BOARD).css("width", (($(GRIDCLS).width()) * 10))
         //$(BOARD).css("height", (($(GRIDCLS).height()) * 10))
@@ -337,6 +339,7 @@ function getBoard() {
                                                       pastels[piece.color]);
                     $(GRIDCLS+":nth-child("+idx+")").html(ushapes[piece.shape]);
                 }
+                $(".boardpiece").css("line-height", fontsize+"px");
             } else {  // place marker in center if board is empty
                 idx = parseInt(($(GRIDCLS).length + 1) / 2, 10);
                 $(GRIDCLS+":nth-child("+idx+")").addClass('snapgrid');
