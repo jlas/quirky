@@ -51,6 +51,9 @@ CHATRE = /^.{1,500}$/;
 // How long to let each turn last for, in seconds
 var COUNTDOWNTIME = 300;  // 5 min
 
+// Max players per room
+var PLAYERLMT = 6;
+
 // My Turn state
 var HAVETURN = null;
 
@@ -223,7 +226,7 @@ function getMyPieces(player) {
      * setTimeout to try setting dimensions again in a short while.
      */
     setDimensions();
-    setTimeout(setDimensions, 100);
+    setTimeout(setDimensions, 250);
 
     if (player.has_turn)
         $(PIECECLS).draggable({
@@ -480,19 +483,25 @@ function drawGameList(games) {
             continue;
         }
         var name = games[i].name;
-        var node = $("<td><a href='#game_room'>" + esc(name) + "</a></td>")[0];
-        node.onclick = function (name) {
-            // nested function to capture name in a closure
-            return function() {
-                $.cookie('game', name);
-                clearTimeout(GETGAMESTID);
-                location.reload();
-            };
-        }(name);
-        $(GAMES).append("<tr>"+
-                        "<td>"+Object.keys(games[i].players).length+"</td>"+
-                        "<td></td>"+
-                        "</tr>");
+        var numplayers = Object.keys(games[i].players).length;
+        var full = "";
+        var node = $("<td>" + esc(name) + "</td>")[0];
+        if (numplayers < PLAYERLMT) {
+            // only allow joining rooms if player limit is not met
+            node = $("<td><a href='#game_room'>" + esc(name) + "</a></td>")[0];
+            node.onclick = function (name) {
+                // nested function to capture name in a closure
+                return function() {
+                    $.cookie('game', name);
+                    clearTimeout(GETGAMESTID);
+                    location.reload();
+                };
+            }(name);
+        } else {
+            full = " (full)";
+        }
+        $(GAMES).append(
+            "<tr><td>" + numplayers + full + "</td><td></td></tr>");
         $(GAMES+">tbody>tr:last-child").prepend(node);
     }
 
