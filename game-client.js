@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2012 Juan Lasheras (http://www.juanl.org).
+
   This file is part of Quirky.
 
   Quirky is free software: you can redistribute it and/or modify

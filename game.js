@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2012 Juan Lasheras (http://www.juanl.org).
+
   This file is part of Quirky.
 
   Quirky is free software: you can redistribute it and/or modify
@@ -37,10 +39,10 @@ var static_files = {
     'layout.css': fs.readFileSync('layout.css'),
     'color.css': fs.readFileSync('color.css'),
     'typography.css': fs.readFileSync('typography.css'),
-    'normalize.css': fs.readFileSync('normalize.css'),
-    'jquery.min.js': fs.readFileSync('jquery/jquery.min.js'),
-    'jquery-ui.min.js': fs.readFileSync('jquery/jquery-ui.min.js'),
-    'jquery.cookie.js': fs.readFileSync('jquery/jquery.cookie.js'),
+    'normalize.css': fs.readFileSync('thirdparty/normalize.css'),
+    'jquery.min.js': fs.readFileSync('thirdparty/jquery.min.js'),
+    'jquery-ui.min.js': fs.readFileSync('thirdparty/jquery-ui.min.js'),
+    'jquery.cookie.js': fs.readFileSync('thirdparty/jquery.cookie.js'),
     'light_noise_diagonal.png': fs.readFileSync("media/light_noise_diagonal.png"),
     'wood.png': fs.readFileSync("media/dark_wood.png")
 };
