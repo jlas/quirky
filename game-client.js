@@ -192,6 +192,16 @@ function drawTurnInfo(pdata) {
         $(ENDTURN)[0].onclick = function() {
             $.post("/games/" + enc(my_game) + "/players", {end_turn: true}, function() {
                 getPlayers();
+
+                /* Typically we let HAVETURN get updated from the server
+                 * in onGetPlayers(), but if there is only one player this
+                 * doesn't work very well (the player has to refresh manually).
+                 * So we force it to false here in this special case.
+                 */
+                if (Object.keys(pdata).length === 1) {
+                    HAVETURN = false;
+                    clearTimeout(COUNTDOWNTID);
+                }
             });
         };
     } else {
