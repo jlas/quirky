@@ -34,7 +34,7 @@ var fs = require('fs');
 var cookies = require('./node_modules/cookies');
 
 var static_files = {
-    'index': fs.readFileSync('index.html'),
+    'index.html': fs.readFileSync('index.html'),
     'game-client.js': fs.readFileSync('game-client.js'),
     'layout.css': fs.readFileSync('layout.css'),
     'color.css': fs.readFileSync('color.css'),
@@ -643,6 +643,8 @@ server.on('request', function(request, response) {
                 type = 'text/javascript';
             }
             respOk(response, f, type);
+        } else {
+            respOk(response, static_files['index.html'], 'text/html');
         }
         break;
     }
