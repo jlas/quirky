@@ -15,14 +15,19 @@ friendly yet.
 
 ![quirky](https://raw.github.com/jlas/quirky/master/media/scrnshot2.png)
 
-## Run It
+## Install & Run
 
-    $ node game.js
+* install with npm
 
-## Requires
+    $ npm install quirky
 
-* [node.js](http://nodejs.org/), tested with 0.4.7
-* cookies (https://github.com/jed/cookies) (install: $ npm install cookies)
+* run the game server
+
+    $ npm start quirky
+
+* (optional) change the http port (defaults to 8010)
+
+    $ npm config set quirky:port <port>
 
 ### Third party libraries included (not written by me):
 
@@ -31,12 +36,12 @@ friendly yet.
 * thirdparty/jquery.cookie.js (https://github.com/carhartl/jquery-cookie)
 * thirdparty/normalize.css (http://necolas.github.com/normalize.css/)
 
-## Images:
+### Images:
 
 * media/light_noise_diagonal.png from http://subtlepatterns.com
 * media/dark_wood.png from http://subtlepatterns.com
 
-## Fonts:
+### Fonts:
 
 * Open Sans and Chango from [Google Web Fonts](http://www.google.com/webfonts)
 
