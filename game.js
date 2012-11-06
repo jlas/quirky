@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
   Copyright (C) 2012 Juan Lasheras (http://www.juanl.org).
 
@@ -650,5 +651,5 @@ server.on('request', function(request, response) {
     }
 });
 
-var port = process.env.PORT || 8010;
+var port = (process.env.PORT || process.env.npm_package_config_port || 8010);
 server.listen(port);
