@@ -17,31 +17,33 @@ friendly yet.
 
 ## Install & Run
 
-* install with npm
+install with npm:
 
     $ npm install quirky
 
-* run the game server
+run the game server:
 
     $ npm start quirky
 
-* (optional) change the http port (defaults to 8010)
+... then go to http://localhost:8010 and play! Optionally, you can change the default http port:
 
     $ npm config set quirky:port <port>
 
-### Third party libraries included (not written by me):
+## Third party things included (not made by me):
+
+### Libraries
 
 * thirdparty/jquery.min.js (http://jquery.com/)
 * thirdparty/jquery-ui.min.js (http://jqueryui.com/)
 * thirdparty/jquery.cookie.js (https://github.com/carhartl/jquery-cookie)
 * thirdparty/normalize.css (http://necolas.github.com/normalize.css/)
 
-### Images:
+### Images
 
 * media/light_noise_diagonal.png from http://subtlepatterns.com
 * media/dark_wood.png from http://subtlepatterns.com
 
-### Fonts:
+### Fonts
 
 * Open Sans and Chango from [Google Web Fonts](http://www.google.com/webfonts)
 
