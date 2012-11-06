@@ -1,20 +1,29 @@
 {
-    "author": "Juan Lasheras <juan.lasheras@gmail.com> (http://www.juanl.org)",
-    "config": {"port": "8010"},
-    "dependencies": {"cookies": "0.2.x"},
-    "description": "A Qwirkle board game clone built with node.js and jQuery.",
-    "engines": {"node": "0.4.7"},
-    "homepage": "https://github.com/jlas/quirky",
-    "keywords": [
-        "board game",
-        "game",
-        "qwirkle"
-    ],
-    "name": "quirky",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jlas/quirky"
-    },
-    "scripts": {"start": "./game.js"},
-    "version": "0.1.0"
+  "author": "Juan Lasheras <juan.lasheras@gmail.com> (http://www.juanl.org)",
+  "config": {
+    "port": "8010"
+  },
+  "dependencies": {
+    "cookies": "0.2.x"
+  },
+  "description": "A Qwirkle board game clone built with node.js and jQuery.",
+  "engines": {
+    "node": "0.4.7"
+  },
+  "homepage": "https://github.com/jlas/quirky",
+  "keywords": [
+    "board game",
+    "game",
+    "qwirkle"
+  ],
+  "name": "quirky",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jlas/quirky.git"
+  },
+  "scripts": {
+    "start": "./game.js"
+  },
+  "version": "0.1.0",
+  "devDependencies": {}
 }
