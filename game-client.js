@@ -475,7 +475,7 @@ var drawChatLog = function() {
             }
             for (var i=0; i<data.length; i++) {
                 var name = data[i].name;
-                var msgcls = (name == my_player) ? "mymsg": "othermsg";
+                var msgcls = (name === my_player) ? "mymsg": "othermsg";
                 $(CHATLOG).prepend('<div><span class="' + msgcls + '">' +
                                    esc(data[i].name) + '</span>: ' +
                                    esc(data[i].input) + '</div>');

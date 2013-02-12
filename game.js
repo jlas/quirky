@@ -140,7 +140,7 @@ function Piece (shape, color) {
     this.shape = shape;
     this.color = color;
     this.equals = function(x) {
-        return (this.shape == x.shape && this.color == x.color);
+        return (this.shape === x.shape && this.color === x.color);
     };
 }
 
@@ -149,7 +149,7 @@ function GamePiece (piece, row, column) {
     this.row = row;
     this.column = column;
     this.equals = function(x) {
-        return (this.column == x.column && this.row == x.row &&
+        return (this.column === x.column && this.row === x.row &&
                 this.piece.equals(x.piece));
     };
 }
@@ -193,12 +193,12 @@ function addGamePiece(game, gamepiece) {
             adjacent = getAdjacent(i);
             if (typeof adjacent === 'undefined') {
                 return false;
-            } else if (i == 6) { // can't have more than 6 pieces in a valid line
+            } else if (i === 6) { // can't have more than 6 pieces in a valid line
                 return adjacent;
             }
 
-            var samecolor = (adjacent.piece.color == piece.color);
-            var sameshape = (adjacent.piece.shape == piece.shape);
+            var samecolor = (adjacent.piece.color === piece.color);
+            var sameshape = (adjacent.piece.shape === piece.shape);
 
             // console.log('piece: ' + piece.color + ' ' + piece.shape +
             //             ', adjacent: ' + adjacent.piece.color + ' ' +
@@ -239,17 +239,16 @@ function addGamePiece(game, gamepiece) {
         var piece = game.boardmat[row][_col];
         return piece && new GamePiece(piece, row, _col);
     });
-    var badPiece = false;
+    var badPiece = (checkLeft || checkRight || checkUp || checkDown);
 
-    // Assignment in if clause is purposeful, to get the value of badPiece
-    if (badPiece = (checkLeft || checkRight || checkUp || checkDown)) {
+    if (badPiece !== false) {
         return ("GamePiece adjacent to incompatible piece: " +
                 badPiece.piece.color + " " + badPiece.piece.shape);
     }
 
     // check if piece played in same row or column as past pieces this turn}
     function sameRowOrCol(otherpiece) {
-        return (otherpiece.row == row || otherpiece.column == col);
+        return (otherpiece.row === row || otherpiece.column === col);
     }
     if (game.turn_pieces) {
         if (!game.turn_pieces.every(sameRowOrCol)) {
@@ -369,7 +368,7 @@ function handlePlayers(request, response, game, path) {
     if (!path.length) {
         // return info on the players collection
 
-        if (request.method == "POST") {
+        if (request.method === "POST") {
             player = playerFromReq(request, response, game);
             if (player) {
                 // end turn
@@ -394,7 +393,7 @@ function handlePlayers(request, response, game, path) {
             }
             requestBody(request, func);
             return;
-        } else if (request.method == 'DELETE') {
+        } else if (request.method === 'DELETE') {
             // delete player from a game
             func = function(form) {
                 if (form && form.name) {
@@ -449,7 +448,7 @@ function handleGame(request, response, game, path) {
     switch(path[0]) {
     case 'board':
         // add pieces to the board
-        if (request.method == "POST") {
+        if (request.method === "POST") {
             requestBody(request, function(form) {
 
                 var player = playerFromReq(request, response, game);
@@ -523,7 +522,7 @@ function handleGame(request, response, game, path) {
 function handleGames(request, response, path) {
     var resp;
     if (!path.length) {
-        if (request.method == "POST") {
+        if (request.method === "POST") {
             // add a new game object
             requestBody(request, function(form) {
                 var gamenm = form.name;
@@ -564,7 +563,7 @@ function handleGames(request, response, path) {
  */
 function handleChat(request, response, chat) {
     var resp, id;
-    if (request.method == "POST") {
+    if (request.method === "POST") {
         // add a line to the chat log
         requestBody(request, function(form) {
             while (chat.length > CHATLINES) {
