@@ -69,6 +69,7 @@ var CHATPNL = '#chat_panel';
 var COUNTDOWN = '#countdown';
 var ENDTURN = '#end_turn';
 var ERRORS = '#errors';
+var FORKME = '#forkme';
 var GAMEPIECES = '#game_pieces';
 var GAMEROOM = '#game_room';
 var GAMES = '#games_tbl';
@@ -437,6 +438,7 @@ function drawChatIn() {
  */
 function drawAddGuest() {
     $(ADDGUEST).show();
+
     function submit() {
         var name =  $(ADDGUESTFRM+"> input")[0].value;
         if (!NAMERE.test(name)) {
@@ -639,6 +641,9 @@ function gameOrLobby(games) {
         drawAddGuest();
         return;
     }
+
+    // hide the fork me banner from now on
+    $(FORKME).hide();
 
     var my_game = $.cookie("game");
     // User is not in a valid game

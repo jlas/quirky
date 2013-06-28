@@ -8,7 +8,7 @@
   },
   "description": "A Qwirkle board game clone built with node.js and jQuery.",
   "engines": {
-    "node": "0.4.7"
+    "node": "0.10.6"
   },
   "homepage": "https://github.com/jlas/quirky",
   "keywords": [
@@ -24,6 +24,6 @@
   "scripts": {
     "start": "./game.js"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "devDependencies": {}
 }
